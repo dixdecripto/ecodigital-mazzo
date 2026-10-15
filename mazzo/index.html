@@ -479,10 +479,11 @@ let coda=[],inviando=false;
 function manda(o){if(!online())return;coda.push(Object.assign({ev:BACKEND.EVENTO,dev:stato.dev,t:new Date().toISOString()},o));spedisci();}
 async function spedisci(){
   if(inviando||!coda.length)return;inviando=true;
-  const o=coda[0];
-  try{const r=await fetch(BACKEND.ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(o)});
-    const j=await r.json();if(!j||!j.ok)throw new Error((j&&j.errore)||"server");coda.shift();}
-  catch(e){setTimeout(()=>{inviando=false;spedisci();},2500);return;}
+  const lotto=coda.slice(0,20);   /* tutti i gesti in attesa partono in una chiamata sola */
+  try{const r=await fetch(BACKEND.ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({tipo:"lotto",ev:BACKEND.EVENTO,dev:stato.dev,voci:lotto})});
+    const j=await r.json();if(!j||!j.ok)throw new Error((j&&j.errore)||"server");coda.splice(0,lotto.length);}
+  catch(e){setTimeout(()=>{inviando=false;spedisci();},2000+Math.random()*2000);return;}
   inviando=false;if(coda.length)spedisci();
 }
 let vivo=null,vivoTimer=null;
