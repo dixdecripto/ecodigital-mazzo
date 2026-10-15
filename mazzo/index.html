@@ -1,0 +1,750 @@
+<title>Il mazzo EcoDigital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,700;125,800;125,900&family=Montserrat:wght@400;500;600;700;800&display=swap">
+<style>
+/* =====================================================================
+   EcoDigital · Il mazzo delle proposte
+   Prosit Agency · versione live per Napoli, 26 ottobre 2026 (firme sul foglio Google)
+
+   Interfaccia da app di incontri: una carta alla volta a tutto schermo,
+   si scorre col dito, i bottoni tondi in basso, le linguette in alto.
+   Nuova identita dal 01/10/2026: blu principale, il verde firma, il rosso
+   passa, il blu chiaro e il «ci metto la faccia», il giallo torna indietro.
+   ===================================================================== */
+:root{
+  color-scheme:light;
+  /* nuova identita (Brand Book, call del 01/10/2026): i nomi dei token restano quelli di settembre */
+  --forest:#293B8E; --deep:#1F2D6E; --deeper:#141C45;
+  --signal:#09693A; --signal-2:#3BAA6C;
+  --sea:#4A63C0; --sun:#F7B807; --alert:#C0202F;
+  --carta:#FFFFFF; --bianco:#FFFFFF; --linea:#E1E3EC; --tenue:#F4F5FA;
+  --ink:#14161F; --muted:#5B6070;
+  --font:"Montserrat","MontserratLocale","Helvetica Neue",Arial,sans-serif;
+  --display:"Archivo","ArchivoLocale","Arial Black","Helvetica Neue",Arial,sans-serif;
+  --mono:"Montserrat","MontserratLocale","Helvetica Neue",Arial,sans-serif;
+}
+/* riserva: se Google Fonts non risponde, i file del kit accanto (in locale) */
+@font-face{font-family:"ArchivoLocale";src:url("../kit/fonts/Archivo-wdth-wght.ttf") format("truetype");font-weight:100 900;font-stretch:62% 125%}
+@font-face{font-family:"MontserratLocale";src:url("../kit/fonts/Montserrat-wght.ttf") format("truetype");font-weight:100 900}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--deeper);color:var(--ink);font-family:var(--font);
+  font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow:hidden}
+h1,h2,h3{margin:0;font-family:var(--display);font-weight:800;font-stretch:125%;letter-spacing:-.01em;line-height:1.02;
+  text-wrap:balance}
+p{margin:0}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+:focus-visible{outline:3px solid var(--signal);outline-offset:2px;border-radius:8px}
+.mono{font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;
+  font-weight:600}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* ------------------------------------------------ fuori dall'app ----- */
+.fuori{height:100%;display:grid;place-items:center;
+  background:
+    radial-gradient(90% 60% at 10% 0%,rgba(9,105,58,.55),transparent 60%),
+    radial-gradient(70% 70% at 50% 40%,rgba(41,59,142,.55),transparent 70%),
+    radial-gradient(80% 60% at 100% 100%,rgba(247,184,7,.22),transparent 60%),
+    var(--deeper);
+  padding:0}
+.contesto{display:none}
+@media(min-width:1000px){
+  .fuori{grid-template-columns:minmax(0,1fr) auto;gap:clamp(30px,5vw,80px);
+    padding:30px clamp(24px,5vw,70px);justify-content:center;align-items:center}
+  .contesto{display:block;max-width:44ch;color:rgba(255,255,255,.76)}
+}
+.contesto .occhiello{display:inline-flex;align-items:center;gap:9px;color:var(--sun);
+  margin-bottom:16px}
+.contesto .occhiello::before{content:"";width:26px;height:4px;transform:skewX(-11deg);background:var(--sun)}
+.contesto h1{font-size:clamp(34px,3.4vw,52px);font-stretch:125%;font-weight:900;text-transform:uppercase;
+  line-height:1;letter-spacing:-.01em;color:#FFFFFF}
+.contesto h1 em{font-style:normal;color:var(--sun)}
+.contesto .logo-fuori{display:block;height:30px;width:auto;margin-bottom:28px}
+.contesto p{margin-top:18px;font-size:1.02rem}
+.contesto .gesti{margin-top:22px;display:grid;gap:8px}
+.contesto .gesti div{display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:center;
+  font-size:.92rem}
+.contesto .gesti i{font-style:normal;display:grid;place-items:center;width:28px;height:28px;
+  border-radius:8px;font-weight:800;color:var(--ink)}
+.contesto b{color:#FFFFFF;font-weight:600}
+.contesto .firma-nota{margin-top:24px;padding-top:16px;border-top:1px solid rgba(255,255,255,.16);
+  font-size:.82rem;color:rgba(255,255,255,.5)}
+
+/* ------------------------------------------------ guscio dell'app ---- */
+.app{position:relative;width:100%;height:100dvh;display:grid;
+  grid-template-rows:auto minmax(0,1fr) auto;background:var(--carta);overflow:hidden}
+@media(min-width:1000px){
+  .app{width:428px;height:min(92dvh,868px);border-radius:30px;
+    box-shadow:0 30px 70px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.12)}
+}
+.app-top{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:11px 14px 9px;background:var(--forest);border-bottom:1px solid var(--forest);z-index:5}
+.marchio{display:flex;align-items:center;gap:9px}
+.marchio{min-width:0}
+.marchio img{display:block;height:18px;width:auto}
+@media(max-width:420px){.marchio .mono{display:none}.ling{width:38px}}
+.marchio b{font-weight:800;font-stretch:125%;letter-spacing:-.04em;font-size:1.06rem;
+  text-transform:uppercase;color:var(--forest)}
+.marchio b span{color:var(--signal)}
+.marchio .mono{color:rgba(255,255,255,.72)}
+.linguette{display:flex;align-items:center;gap:2px}
+.ling{display:grid;place-items:center;width:42px;height:38px;border-radius:11px;color:rgba(255,255,255,.62);
+  position:relative;transition:color .16s ease,background .16s ease}
+.ling:hover{background:rgba(255,255,255,.1);color:#fff}
+.ling svg{width:22px;height:22px}
+.ling[aria-current="true"]{color:var(--sun)}
+.ling[aria-current="true"]::after{content:"";position:absolute;bottom:-9px;left:12px;right:12px;
+  height:2px;border-radius:2px;background:var(--sun)}
+.ling .bollo{position:absolute;top:4px;right:6px;min-width:15px;height:15px;padding:0 3px;
+  border-radius:99px;background:var(--sun);color:var(--ink);font-family:var(--mono);font-size:.5rem;
+  font-weight:600;display:grid;place-items:center}
+
+.corpo{position:relative;min-height:0;background:var(--carta)}
+.vista{position:absolute;inset:0;display:none;overflow:auto;-webkit-overflow-scrolling:touch}
+.vista.on{display:block}
+.vista.v-mazzo{overflow:hidden;padding:10px 10px 4px}
+.imbottita{padding:18px 16px 26px}
+
+/* ------------------------------------------------ la pila ------------ */
+.pila{position:relative;width:100%;height:100%}
+.carta{position:absolute;inset:0;border-radius:16px;overflow:hidden;background:var(--deeper);
+  box-shadow:0 10px 28px rgba(14,20,56,.32);touch-action:none;user-select:none;
+  -webkit-user-select:none;cursor:grab;will-change:transform;color:#FFFFFF}
+.carta.via{transition:transform .4s cubic-bezier(.3,.7,.3,1),opacity .4s ease}
+.carta canvas{position:absolute;inset:0;width:100%;height:100%}
+.carta.con-foto canvas{visibility:hidden}
+.carta img.foto{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;-webkit-user-drag:none}
+.dettaglio a{color:#F7B807;text-decoration:underline;overflow-wrap:anywhere}
+.dettaglio .fonti{font-size:.8rem;opacity:.85}
+.velo{position:absolute;inset:36% 0 0;
+  background:linear-gradient(180deg,rgba(14,20,56,0),rgba(14,20,56,.72) 52%,rgba(14,20,56,.95))}
+.segmenti{position:absolute;top:8px;left:9px;right:9px;display:flex;gap:3px;z-index:3}
+.segmenti i{flex:1;height:3px;border-radius:99px;background:rgba(255,255,255,.3)}
+.segmenti i.fatto{background:rgba(255,255,255,.92)}
+.carta .tema{position:absolute;top:20px;left:14px;z-index:3;padding:5px 10px;border-radius:999px;
+  background:rgba(14,20,56,.6);border:1px solid rgba(255,255,255,.24);backdrop-filter:blur(4px)}
+.info{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:16px 16px 18px;
+  display:grid;gap:8px}
+.info h2{font-size:clamp(21px,5.8vw,27px);font-stretch:125%;text-transform:uppercase;
+  color:#FFFFFF;padding-right:44px}
+.info h2 em{font-style:normal;font-weight:400;font-size:.52em;color:rgba(255,255,255,.6);
+  letter-spacing:0;margin-left:8px;font-variant-numeric:tabular-nums}
+.info .claim{font-size:.98rem;line-height:1.36;font-weight:600;letter-spacing:-.01em;
+  color:rgba(255,255,255,.94);text-shadow:0 1px 10px rgba(14,20,56,.6)}
+.info .apri{justify-self:start;margin-top:2px;display:inline-flex;align-items:center;gap:7px;
+  padding:7px 13px;border-radius:999px;border:1px solid rgba(255,255,255,.34);
+  background:rgba(14,20,56,.45);color:#FFFFFF;font-size:.78rem;font-weight:600}
+.info .apri:hover{border-color:var(--signal-2)}
+.tondo-i{position:absolute;right:14px;bottom:20px;z-index:4;width:34px;height:34px;
+  border-radius:50%;display:grid;place-items:center;background:rgba(14,20,56,.5);
+  border:1px solid rgba(255,255,255,.34);color:#FFFFFF;font-weight:800;font-size:.9rem}
+
+/* dettaglio che sale dentro la carta */
+.dettaglio{position:absolute;inset:0;z-index:6;background:rgba(14,20,56,.94);
+  backdrop-filter:blur(6px);padding:22px 18px;display:flex;flex-direction:column;gap:14px;
+  transform:translateY(101%);transition:transform .3s cubic-bezier(.3,.8,.3,1);overflow:auto;
+  touch-action:pan-y;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.dettaglio.su{transform:translateY(0)}
+.dettaglio>*{flex-shrink:0}
+.dettaglio h3{font-size:1.25rem;font-stretch:125%;text-transform:uppercase;color:#FFFFFF}
+.dettaglio .et{color:var(--signal-2)}
+.dettaglio p{font-size:.95rem;line-height:1.55;color:rgba(255,255,255,.84)}
+.dettaglio p b{color:#FFFFFF;font-weight:600}
+.dettaglio .chiudi{margin-top:auto;align-self:flex-start;padding:9px 18px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.4);font-size:.84rem;font-weight:600}
+
+/* timbri */
+.timbro{position:absolute;z-index:5;padding:6px 14px;border:4px solid;border-radius:10px;
+  font-family:var(--mono);font-weight:600;font-size:.86rem;letter-spacing:.08em;opacity:0;
+  pointer-events:none;text-transform:uppercase;background:rgba(14,20,56,.28)}
+.timbro.t-si{top:30px;left:16px;transform:rotate(-18deg);color:var(--signal-2);border-color:var(--signal-2)}
+.timbro.t-no{top:30px;right:16px;transform:rotate(18deg);color:#FF6B78;border-color:#FF6B78}
+.timbro.t-fa{left:50%;bottom:120px;transform:translateX(-50%) rotate(-5deg);color:#AEBBF0;
+  border-color:#AEBBF0}
+
+/* istruzioni sulla prima carta */
+.guida{position:absolute;inset:0;z-index:7;display:grid;align-content:center;gap:12px;
+  padding:26px;background:rgba(14,20,56,.82);backdrop-filter:blur(3px);text-align:center}
+.guida.via{display:none}
+.guida h3{font-size:1.25rem;font-stretch:125%;text-transform:uppercase;color:#FFFFFF}
+.guida .righe{display:grid;gap:9px;margin-top:4px;text-align:left}
+.guida .righe div{display:grid;grid-template-columns:30px 1fr;gap:11px;align-items:center;
+  font-size:.9rem;color:rgba(255,255,255,.88)}
+.guida .righe i{font-style:normal;display:grid;place-items:center;width:30px;height:30px;
+  border-radius:9px;font-weight:800;color:var(--ink)}
+.guida button{margin-top:10px;justify-self:center;padding:12px 30px;border-radius:999px;
+  background:var(--sun);color:var(--ink);font-weight:700}
+
+/* fine del mazzo */
+.fine{position:absolute;inset:0;z-index:2;display:none;flex-direction:column;
+  align-items:center;justify-content:center;gap:12px;padding:26px;text-align:center;
+  border-radius:16px;background:var(--forest);color:#FFFFFF}
+.fine.on{display:flex}
+.fine .num{font-family:var(--display);font-stretch:125%;font-size:3rem;font-weight:900;line-height:1;
+  color:var(--sun)}
+.fine h2{font-size:clamp(22px,6.4vw,32px);font-stretch:125%;text-transform:uppercase}
+.fine p{color:rgba(255,255,255,.8);font-size:.95rem;max-width:34ch}
+.fine .b{margin-top:6px}
+
+/* ------------------------------------------------ bottoni ------------ */
+.azioni{background:var(--bianco);border-top:1px solid var(--linea);
+  padding:10px 14px calc(12px + env(safe-area-inset-bottom));display:grid;gap:8px;z-index:5}
+.riga-b{display:flex;align-items:center;justify-content:center;gap:clamp(10px,4vw,18px)}
+.tondo{display:grid;place-items:center;border-radius:50%;background:var(--bianco);
+  box-shadow:0 3px 10px rgba(20,22,31,.16),0 0 0 1px rgba(20,22,31,.07);
+  transition:transform .14s ease,box-shadow .14s ease}
+.tondo:hover{transform:translateY(-3px);box-shadow:0 8px 18px rgba(20,22,31,.2)}
+.tondo:active{transform:scale(.9)}
+.tondo svg{width:26px;height:26px}
+.tondo.grande{width:62px;height:62px}
+.tondo.grande svg{width:30px;height:30px}
+.tondo.piccolo{width:46px;height:46px}
+.tondo.piccolo svg{width:21px;height:21px}
+.t-indietro{color:var(--sun)}
+.t-passo{color:var(--alert)}
+.t-faccia{color:var(--sea)}
+.t-like{color:var(--signal)}
+.tondo[disabled]{opacity:.34;cursor:default;transform:none;box-shadow:0 0 0 1px rgba(20,22,31,.07)}
+.stato{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--muted)}
+.stato .barra{flex:1;height:3px;border-radius:99px;background:var(--linea);overflow:hidden}
+.stato .barra i{display:block;height:100%;background:var(--signal);transition:width .3s ease}
+
+/* ------------------------------------------------ altre viste -------- */
+.titolo-vista{margin-bottom:16px}
+.titolo-vista h2{font-size:1.5rem;font-stretch:125%;text-transform:uppercase;color:var(--forest)}
+.titolo-vista p{margin-top:8px;font-size:.92rem;color:var(--muted)}
+.classifica{display:grid;gap:1px;background:var(--linea);border:1px solid var(--linea);
+  border-radius:14px;overflow:hidden}
+.riga{display:grid;grid-template-columns:24px minmax(0,1fr) 62px;gap:10px;align-items:center;
+  padding:10px 12px;background:var(--bianco)}
+.riga .pos{font-family:var(--mono);font-size:.72rem;font-weight:600;color:var(--muted)}
+.riga.top3{background:#F4F5FA}
+.riga.top3 .pos{color:var(--signal)}
+.riga .tit b{display:block;font-weight:600;font-size:.92rem;letter-spacing:-.01em;
+  overflow-wrap:anywhere}
+.riga .bar{display:block;position:relative;height:6px;border-radius:99px;background:#E9ECF7;
+  overflow:hidden;margin:5px 0 4px}
+.riga .bar i{position:absolute;inset:0 auto 0 0;background:var(--signal);
+  transition:width .5s cubic-bezier(.3,.8,.3,1)}
+.riga.top3 .bar i{background:var(--forest)}
+.riga .m{display:block;font-family:var(--mono);font-size:.52rem;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted)}
+.riga .cif{text-align:right;font-family:var(--mono);font-size:.7rem;font-weight:600;
+  color:var(--forest)}
+.riga .cif span{display:block;font-weight:400;font-size:.5rem;color:var(--muted);margin-top:2px}
+.tua{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:99px;background:#E3F1EA;
+  color:var(--signal);font-family:var(--mono);font-size:.46rem;letter-spacing:.1em;
+  vertical-align:middle}
+.tua.blu{background:#E9ECF7;color:var(--sea)}
+
+.tappe{display:grid;gap:10px;margin-top:6px}
+.tappa{padding:14px 16px;background:var(--bianco);border:1px solid var(--linea);border-radius:13px}
+.tappa .n{font-family:var(--mono);font-size:.54rem;font-weight:600;letter-spacing:.12em;
+  color:var(--signal);text-transform:uppercase}
+.tappa h3{margin:7px 0 6px;font-size:.98rem;font-stretch:125%;color:var(--forest)}
+.tappa p{font-size:.88rem;color:var(--muted)}
+.avviso{margin-top:14px;padding:13px 15px;border-left:3px solid var(--signal);background:#F4F5FA;
+  border-radius:0 11px 11px 0;font-size:.88rem;color:var(--muted)}
+.avviso b{color:var(--forest)}
+
+.modulo{display:grid;gap:10px}
+.campo{display:grid;gap:5px}
+.campo label{font-family:var(--mono);font-size:.54rem;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted)}
+.campo input,.campo textarea,.campo select{width:100%;padding:11px 13px;border-radius:11px;
+  border:1px solid #D5D9E6;background:var(--bianco);color:var(--ink);font:inherit;font-size:.95rem}
+.campo textarea{min-height:92px;resize:vertical;line-height:1.45}
+.campo input:focus,.campo textarea:focus,.campo select:focus{border-color:var(--signal);
+  outline:none;box-shadow:0 0 0 3px rgba(41,59,142,.16)}
+.duecol{display:grid;gap:10px;grid-template-columns:1fr 1fr}
+.b{display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;
+  font-weight:700;font-size:.93rem;padding:13px 24px;border-radius:999px;border:1px solid transparent;
+  cursor:pointer;transition:transform .15s ease,filter .15s ease}
+.b:hover{transform:translateY(-1px)}
+.b-sig{background:var(--signal);color:#FFFFFF}
+.b-scuro{background:var(--forest);color:#FFFFFF}
+.b-linea{border-color:rgba(255,255,255,.45);color:#FFFFFF}
+.b-linea.scuro{border-color:#D5D9E6;color:var(--forest)}
+.esito{display:none;padding:11px 13px;border-radius:11px;background:#E3F1EA;border:1px solid #B8DCC8;
+  color:var(--forest);font-size:.88rem}
+.esito.on{display:block}
+.nota{font-size:.76rem;line-height:1.5;color:var(--muted)}
+.muro{display:grid;gap:9px;margin-top:14px}
+.voce{padding:12px 14px;background:var(--bianco);border:1px solid var(--linea);border-radius:12px}
+.voce p{font-size:.9rem;line-height:1.45;overflow-wrap:anywhere}
+.voce .chi{margin-top:6px;font-family:var(--mono);font-size:.52rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted)}
+.voce.nuova{border-color:var(--signal);background:#F2F8F4}
+.riassunto{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px}
+.riassunto div{padding:13px 14px;border-radius:13px;background:var(--forest);color:#FFFFFF}
+.riassunto div.chiara{background:var(--bianco);border:1px solid var(--linea);color:var(--ink)}
+.riassunto b{display:block;font-family:var(--mono);font-size:1.6rem;font-weight:600;line-height:1}
+.riassunto span{display:block;margin-top:5px;font-size:.74rem;opacity:.78}
+.elenco{margin:14px 0 0;padding-left:18px;display:grid;gap:9px;font-size:.88rem;color:var(--muted)}
+.elenco b{color:var(--forest)}
+details summary{cursor:pointer;font-weight:600;color:var(--forest);font-size:.9rem}
+
+@media(prefers-reduced-motion:reduce){*{transition-duration:.01ms!important}}
+</style>
+
+<div class="fuori">
+  <aside class="contesto">
+    <img class="logo-fuori" src="mono-bianco.svg" alt="EcoDigital">
+    <p class="occhiello mono">Napoli, 26 ottobre 2026 · 18 schede</p>
+    <h1>Sei<br>d'accordo?<br><em>Dillo in<br>due secondi.</em></h1>
+    <p>Ogni mese la rete EcoDigital mette in gioco 18 proposte su ecologia e digitale. Le guardi una per una e dici sì o no. Lo scorrimento vale come adesione: conta come una firma sotto quella proposta.</p>
+    <div class="gesti">
+      <div><i style="background:#3BAA6C">&rarr;</i><span>Scorri a destra: <b>firmo questa proposta</b></span></div>
+      <div><i style="background:#F4B6BC">&larr;</i><span>Scorri a sinistra: <b>non sono d'accordo</b></span></div>
+      <div><i style="background:#AEBBF0">&uarr;</i><span>Scorri in alto: <b>ci metto la faccia</b>, voglio dare una mano</span></div>
+    </div>
+    <p class="firma-nota">A fine mese le tre proposte più firmate entrano nel dossier che la rete porta ai tavoli, diventano il tema di una tappa e una serie di post. Le proposte scritte da voi entrano nel mazzo del mese dopo.</p>
+  </aside>
+
+  <div class="app">
+    <header class="app-top">
+      <div class="marchio"><img src="istituzionale-negativo.svg" alt="EcoDigital"><span class="mono">Napoli · 26/10</span></div>
+      <nav class="linguette" role="tablist">
+        <button class="ling" data-v="mazzo" role="tab" aria-current="true" title="Il mazzo" aria-label="Il mazzo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="5" width="12" height="15" rx="2.4"/><path d="M8.6 3.4l8.3 1.8a2.4 2.4 0 0 1 1.8 2.9l-2.3 10.6"/></svg>
+        </button>
+        <button class="ling" data-v="classifica" role="tab" title="Classifica" aria-label="Classifica">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M5 20V9M12 20V4M19 20v-7"/></svg>
+        </button>
+        <button class="ling" data-v="proponi" role="tab" title="Proponi la tua" aria-label="Proponi la tua">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18.5V21h2.6L18 9.6 15.4 7 4 18.5z"/><path d="M15.4 7l1.8-1.8a1.8 1.8 0 0 1 2.6 0l0 0a1.8 1.8 0 0 1 0 2.6L18 9.6"/></svg>
+        </button>
+        <button class="ling" data-v="adesione" role="tab" title="La tua adesione" aria-label="La tua adesione">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8.2" r="3.6"/><path d="M4.8 20c.6-3.7 3.6-5.8 7.2-5.8s6.6 2.1 7.2 5.8"/></svg>
+          <span class="bollo tnum" id="bollo" hidden>0</span>
+        </button>
+      </nav>
+    </header>
+
+    <div class="corpo">
+      <!-- ---------------------------------------------- il mazzo ----- -->
+      <section class="vista v-mazzo on" id="v-mazzo" role="tabpanel">
+        <div class="pila" id="pila" aria-live="polite">
+          <div class="fine" id="fine">
+            <p class="mono" style="color:var(--signal-2)">Mazzo finito</p>
+            <p class="num tnum" id="fine-num">0/18</p>
+            <h2 id="fine-tit">Hai firmato</h2>
+            <p id="fine-txt">Registra l'adesione, così le firme di stasera hanno un nome e una città.</p>
+            <button class="b b-sig" type="button" data-va="adesione">Firma l'adesione</button>
+            <button class="b b-linea" type="button" id="rivedi">Rivedi il mazzo</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------------------------------------------- classifica --- -->
+      <section class="vista" id="v-classifica" role="tabpanel">
+        <div class="imbottita">
+          <div class="titolo-vista">
+            <h2>Le più firmate</h2>
+            <p>Le firme di tutta la sala, aggiornate mentre scorri. Le prime tre entrano nel dossier che la rete porta ai tavoli.</p>
+          </div>
+          <div class="classifica" id="lista-classifica"></div>
+          <p class="nota" style="margin-top:12px" id="nota-classifica">Conteggio in tempo reale di tutti i telefoni in sala.</p>
+        </div>
+      </section>
+
+      <!-- ---------------------------------------------- proponi ------ -->
+      <section class="vista" id="v-proponi" role="tabpanel">
+        <div class="imbottita">
+          <div class="titolo-vista">
+            <h2>Scrivine una tu</h2>
+            <p>Una frase sola, come quelle del mazzo. Funzionano meglio le proposte che qualcuno in Italia sta già facendo: un comune, una scuola, un'impresa. Se c'è il posto e la data, scrivili.</p>
+          </div>
+          <form class="modulo" id="modulo-proposta" autocomplete="off">
+            <div class="campo">
+              <label for="p-testo">La tua proposta</label>
+              <textarea id="p-testo" name="testo" maxlength="220" required placeholder="Esempio: ogni scuola pubblica misura quanta energia consuma e pubblica il numero sul sito."></textarea>
+            </div>
+            <div class="duecol">
+              <div class="campo"><label for="p-nome">Nome</label><input id="p-nome" name="nome" type="text" maxlength="40" required placeholder="Marco T."></div>
+              <div class="campo"><label for="p-citta">Città</label><input id="p-citta" name="citta" type="text" maxlength="40" required placeholder="Catania"></div>
+            </div>
+            <button class="b b-scuro" type="submit">Manda la proposta</button>
+            <p class="esito" id="p-esito"></p>
+            <p class="nota">La leggiamo, cerchiamo il fatto italiano che la tiene in piedi e se regge entra nel mazzo del mese prossimo con il tuo nome.</p>
+          </form>
+          <p class="mono" style="color:var(--muted);margin-top:22px">Arrivate finora</p>
+          <div class="muro" id="muro"></div>
+        </div>
+      </section>
+
+      <!-- ---------------------------------------------- adesione ----- -->
+      <section class="vista" id="v-adesione" role="tabpanel">
+        <div class="imbottita">
+          <div class="titolo-vista">
+            <h2>La tua adesione</h2>
+            <p>Lo scorrimento conta già come firma. Il nome serve per una cosa sola: quando la rete porta una proposta a un tavolo può dire quante persone la sostengono e da quante città arrivano.</p>
+          </div>
+          <div class="riassunto">
+            <div><b class="tnum" id="r-firme">0</b><span>proposte firmate</span></div>
+            <div class="chiara"><b class="tnum" id="r-faccia">0</b><span>ci metti la faccia</span></div>
+          </div>
+          <form class="modulo" id="modulo-firma" autocomplete="off">
+            <div class="duecol">
+              <div class="campo"><label for="f-nome">Nome</label><input id="f-nome" name="nome" type="text" maxlength="40" required placeholder="Giulia"></div>
+              <div class="campo"><label for="f-cognome">Iniziale del cognome</label><input id="f-cognome" name="cognome" type="text" maxlength="2" required placeholder="R."></div>
+            </div>
+            <div class="duecol">
+              <div class="campo"><label for="f-citta">Città</label><input id="f-citta" name="citta" type="text" maxlength="40" required placeholder="Salerno"></div>
+              <div class="campo"><label for="f-cat">Sono</label>
+                <select id="f-cat" name="categoria">
+                  <option>Cittadino</option><option>Impresa</option><option>Startup</option>
+                  <option>Amministratore</option><option>Studente</option><option>Associazione</option>
+                </select>
+              </div>
+            </div>
+            <button class="b b-sig" type="submit" id="f-invia">Registra l'adesione</button>
+            <p class="esito" id="f-esito"></p>
+            <label class="nota" style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" name="consenso" required style="margin-top:3px">Acconsento che nome, iniziale del cognome, città e categoria siano conservati dalla rete EcoDigital per contare le adesioni alle proposte. Niente email, niente telefono.</label>
+          </form>
+
+          <h3 style="margin-top:28px;font-size:1.3rem;font-stretch:84%;text-transform:uppercase;color:var(--forest)">Come funziona</h3>
+          <div class="tappe">
+            <div class="tappa">
+              <p class="n">Dal primo all'ultimo giorno</p>
+              <h3>18 proposte in gioco</h3>
+              <p>Ogni scheda dice una cosa sola, con il fatto italiano che la tiene in piedi. Si firma scorrendo, senza moduli lunghi e senza iscriversi a niente.</p>
+            </div>
+            <div class="tappa">
+              <p class="n">Ultimo giorno del mese</p>
+              <h3>Le prime tre passano</h3>
+              <p>Entrano nel dossier che la rete porta ai tavoli istituzionali, diventano il tema di una tappa EcoDigital in una città e una serie di post sui canali della rete.</p>
+            </div>
+            <div class="tappa">
+              <p class="n">Mese dopo</p>
+              <h3>Il mazzo si rifà</h3>
+              <p>Le proposte che avete scritto voi vengono lette una per una, verificate con un fatto già esistente in Italia, e le migliori entrano nelle 18 schede del mese nuovo, col nome di chi le ha proposte.</p>
+            </div>
+          </div>
+          <p class="avviso"><b>Il mazzo di stasera è il primo.</b> Le tappe fatte dal 2021 a oggi sono 31, da Milano a Quartu Sant'Elena. Scrivici a info@ecodigital.it.</p>
+
+          <details style="margin-top:20px">
+            <summary>Leggi le 18 proposte in elenco, senza scorrimento</summary>
+            <ol class="elenco" id="elenco"></ol>
+          </details>
+          <p class="nota" style="margin-top:22px">I gesti sul mazzo sono anonimi: ogni telefono ha un codice casuale e il foglio registra solo quel codice, la proposta e il gesto.</p>
+        </div>
+      </section>
+    </div>
+
+    <footer class="azioni" id="azioni">
+      <div class="riga-b">
+        <button class="tondo piccolo t-indietro" id="cmd-indietro" type="button" title="Torna indietro" aria-label="Torna indietro" disabled>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h11a5 5 0 0 1 0 10h-3"/><path d="M7 6l-4 4 4 4"/></svg>
+        </button>
+        <button class="tondo grande t-passo" id="cmd-no" type="button" title="Non sono d'accordo" aria-label="Non sono d'accordo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+        <button class="tondo piccolo t-faccia" id="cmd-faccia" type="button" title="Ci metto la faccia" aria-label="Ci metto la faccia">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.5 5.4 5.9.8-4.3 4.1 1.1 5.9L12 16.4 6.8 19.2l1.1-5.9L3.6 9.2l5.9-.8L12 3z"/></svg>
+        </button>
+        <button class="tondo grande t-like" id="cmd-si" type="button" title="Firmo questa proposta" aria-label="Firmo questa proposta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.5s-7.6-4.9-7.6-10.4A4.6 4.6 0 0 1 12 6.8a4.6 4.6 0 0 1 7.6 3.3c0 5.5-7.6 10.4-7.6 10.4z"/></svg>
+        </button>
+      </div>
+      <div class="stato">
+        <span class="mono tnum" id="conta-testo">01 di 18</span>
+        <span class="barra"><i id="avanz" style="width:0%"></i></span>
+        <span class="mono tnum" id="conta-firme">0 firme</span>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<script src="dati.js"></script>
+<script src="arte.js"></script>
+<script>
+/* =====================================================================
+   3. L'app: viste, mazzo, gesti
+   ===================================================================== */
+const BACKEND={
+  ENDPOINT:"",   // URL /exec del Web App Apps Script «Mazzo EcoDigital - backend» (vuoto = tutto resta nel browser)
+  EVENTO:new URLSearchParams(location.search).get("ev")||"napoli-2026-10-26"
+};
+const MEM="ecodigital-mazzo-"+BACKEND.EVENTO;
+let stato={voti:{},firmatario:null,mie:[],guida:false,dev:""};
+try{const s=localStorage.getItem(MEM);if(s)stato=Object.assign(stato,JSON.parse(s));}catch(e){}
+if(!stato.dev){stato.dev=Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-4);}
+function salva(){try{localStorage.setItem(MEM,JSON.stringify(stato));}catch(e){}}
+salva();
+/* ---- il filo col foglio: ogni gesto parte subito, in coda se la rete manca ---- */
+const online=()=>!!BACKEND.ENDPOINT;
+let coda=[],inviando=false;
+function manda(o){if(!online())return;coda.push(Object.assign({ev:BACKEND.EVENTO,dev:stato.dev,t:new Date().toISOString()},o));spedisci();}
+async function spedisci(){
+  if(inviando||!coda.length)return;inviando=true;
+  const o=coda[0];
+  try{const r=await fetch(BACKEND.ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(o)});
+    const j=await r.json();if(!j||!j.ok)throw new Error((j&&j.errore)||"server");coda.shift();}
+  catch(e){setTimeout(()=>{inviando=false;spedisci();},2500);return;}
+  inviando=false;if(coda.length)spedisci();
+}
+let vivo=null,vivoTimer=null;
+async function leggi(){
+  if(!online())return;
+  try{const r=await fetch(BACKEND.ENDPOINT+"?ev="+encodeURIComponent(BACKEND.EVENTO)+"&_="+Date.now());
+    const j=await r.json();if(j&&j.ok){vivo=j;classifica();muro();}}catch(e){}
+}
+function vivoCiclo(){clearTimeout(vivoTimer);leggi();vivoTimer=setTimeout(vivoCiclo,document.hidden?30000:8000);}
+function esc(t){const d=document.createElement("div");d.textContent=t;return d.innerHTML;}
+
+const pila=document.getElementById("pila"),fine=document.getElementById("fine"),
+      azioni=document.getElementById("azioni");
+let carte=[],indice=0,storia=[],appenaTrascinato=false;
+
+/* ---------------------------------------------------- viste ---------- */
+function apri(v){
+  document.querySelectorAll(".vista").forEach(s=>s.classList.toggle("on",s.id==="v-"+v));
+  document.querySelectorAll(".ling").forEach(b=>b.setAttribute("aria-current",String(b.dataset.v===v)));
+  azioni.style.display=v==="mazzo"?"grid":"none";
+  const s=document.getElementById("v-"+v);if(s)s.scrollTop=0;
+}
+document.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>apri(b.dataset.v));
+document.querySelectorAll("[data-va]").forEach(b=>b.onclick=()=>apri(b.dataset.va));
+
+/* ---------------------------------------------------- le carte ------- */
+function creaCarta(p,i){
+  const el=document.createElement("article");
+  el.className="carta con-foto";
+  el.innerHTML=
+    '<canvas aria-hidden="true"></canvas>'+
+    '<img class="foto" src="foto/'+p.id+'.jpg" alt="" draggable="false" decoding="async" onerror="this.parentNode.classList.remove(\'con-foto\');this.remove()">'+
+    '<div class="velo"></div>'+
+    '<div class="segmenti" aria-hidden="true">'+P.map((_,k)=>'<i class="'+(k<=i?"fatto":"")+'"></i>').join("")+'</div>'+
+    '<span class="tema mono">'+esc(p.tema)+'</span>'+
+    '<span class="timbro t-si">Firmo</span>'+
+    '<span class="timbro t-no">Passo</span>'+
+    '<span class="timbro t-fa">Ci metto la faccia</span>'+
+    '<button class="tondo-i" type="button" aria-label="Il fatto dietro la proposta">i</button>'+
+    '<div class="info"><h2>'+esc(p.titolo)+'<em class="tnum">'+String(i+1).padStart(2,"0")+'</em></h2>'+
+      '<p class="claim">'+esc(p.claim)+'</p></div>'+
+    '<div class="dettaglio"><p class="mono et">'+esc(p.tema)+' · scheda '+String(i+1).padStart(2,"0")+'</p>'+
+      '<h3>'+esc(p.titolo)+'</h3>'+
+      '<p style="font-weight:600;color:#FFFFFF">'+esc(p.claim)+'</p>'+
+      '<p class="mono et">Il fatto</p><p>'+p.fatto+'</p>'+
+      '<button class="chiudi" type="button">Torna alla scheda</button></div>';
+  el.dataset.i=i;
+  const det=el.querySelector(".dettaglio");
+  el.querySelector(".tondo-i").onclick=e=>{e.stopPropagation();det.classList.add("su");};
+  el.querySelector(".chiudi").onclick=e=>{e.stopPropagation();det.classList.remove("su");};
+  el.addEventListener("click",e=>{
+    if(appenaTrascinato)return;
+    if(e.target.closest(".dettaglio,.tondo-i,.guida"))return;
+    det.classList.add("su");});
+  return el;
+}
+
+function impila(){
+  carte.forEach((el,k)=>{
+    const pos=k-indice;
+    if(pos<0){el.style.pointerEvents="none";
+      if(!el.classList.contains("via"))el.style.display="none";return;}
+    if(pos>2){el.style.display="none";return;}
+    el.style.display="block";
+    el.style.zIndex=String(40-pos);
+    el.style.transform="translate3d(0,"+(pos*-7)+"px,0) scale("+(1-pos*.03)+")";
+    el.style.opacity=pos===2?".6":"1";
+    el.style.pointerEvents=pos===0?"auto":"none";
+    const cv=el.querySelector("canvas");
+    if(!cv.dataset.fatto){requestAnimationFrame(()=>{
+      disegna(cv,P[+el.dataset.i].arte,+el.dataset.i);cv.dataset.fatto="1";});}
+  });
+  const finito=indice>=P.length;
+  fine.classList.toggle("on",finito);
+  ["cmd-si","cmd-no","cmd-faccia"].forEach(id=>document.getElementById(id).disabled=finito);
+  document.getElementById("cmd-indietro").disabled=!storia.length;
+  document.getElementById("conta-testo").textContent=finito?"finito":String(Math.min(indice+1,18)).padStart(2,"0")+" di 18";
+  document.getElementById("avanz").style.width=(indice/P.length*100)+"%";
+  const f=firme();
+  document.getElementById("conta-firme").textContent=f+(f===1?" firma":" firme");
+  const b=document.getElementById("bollo");b.hidden=f===0;b.textContent=f;
+  document.getElementById("r-firme").textContent=f;
+  document.getElementById("r-faccia").textContent=Object.values(stato.voti).filter(v=>v==="faccia").length;
+  if(finito)finale();
+}
+function firme(){return Object.values(stato.voti).filter(v=>v==="si"||v==="faccia").length;}
+
+function finale(){
+  const f=firme(),fa=Object.values(stato.voti).filter(v=>v==="faccia").length;
+  document.getElementById("fine-num").textContent=f+"/18";
+  document.getElementById("fine-tit").textContent=f===0?"Nessuna firma":(f===1?"Una proposta firmata":"Proposte firmate");
+  document.getElementById("fine-txt").textContent=fa>0
+    ? "Su "+fa+(fa===1?" proposta hai detto che ci metti la faccia. ":" proposte hai detto che ci metti la faccia. ")+"Registra l'adesione, così le firme di stasera hanno un nome e una città."
+    : "Registra l'adesione, così le firme di stasera hanno un nome e una città.";
+}
+
+function vota(v,dir){
+  if(indice>=P.length)return;
+  const el=carte[indice];
+  stato.voti[P[indice].id]=v;salva();
+  manda({tipo:"swipe",id:P[indice].id,voto:v});
+  storia.push(indice);
+  el.classList.add("via");el.style.zIndex="50";
+  if(v==="faccia")el.style.transform="translate3d(0,-"+(innerHeight+200)+"px,0) rotate(-5deg)";
+  else el.style.transform="translate3d("+(dir*(innerWidth+400))+"px,50px,0) rotate("+(dir*24)+"deg)";
+  el.style.opacity="0";
+  indice++;impila();classifica();
+}
+function indietro(){
+  if(!storia.length)return;
+  indice=storia.pop();
+  const el=carte[indice];
+  delete stato.voti[P[indice].id];salva();
+  manda({tipo:"swipe",id:P[indice].id,voto:""});
+  el.classList.remove("via");el.style.opacity="1";
+  impila();classifica();
+}
+
+/* ---------------------------------------------------- trascinamento -- */
+let drag=null;
+function timbri(el,dx,dy,su){
+  el.querySelector(".t-si").style.opacity=su?0:Math.max(0,Math.min(1,dx/90));
+  el.querySelector(".t-no").style.opacity=su?0:Math.max(0,Math.min(1,-dx/90));
+  el.querySelector(".t-fa").style.opacity=su?Math.max(0,Math.min(1,-dy/90)):0;
+}
+pila.addEventListener("pointerdown",e=>{
+  if(indice>=P.length)return;
+  const el=carte[indice];
+  if(!el||!el.contains(e.target))return;
+  if(e.target.closest(".dettaglio,.tondo-i,.guida"))return;
+  drag={x:e.clientX,y:e.clientY,el,mosso:false};
+  el.setPointerCapture(e.pointerId);
+  el.classList.remove("via");el.style.cursor="grabbing";
+});
+pila.addEventListener("pointermove",e=>{
+  if(!drag)return;
+  const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+  if(Math.abs(dx)>4||Math.abs(dy)>4)drag.mosso=true;
+  const su=dy<-28&&Math.abs(dy)>Math.abs(dx);
+  drag.el.style.transform="translate3d("+dx+"px,"+dy+"px,0) rotate("+(dx*.05)+"deg)";
+  timbri(drag.el,dx,dy,su);
+});
+function chiudiDrag(e){
+  if(!drag)return;
+  const dx=e.clientX-drag.x,dy=e.clientY-drag.y,el=drag.el,mosso=drag.mosso;
+  drag=null;el.style.cursor="grab";timbri(el,0,0,false);
+  if(mosso){appenaTrascinato=true;setTimeout(()=>{appenaTrascinato=false;},160);}
+  if(dy<-100&&Math.abs(dy)>Math.abs(dx)){vota("faccia",0);return;}
+  if(dx>92){vota("si",1);return;}
+  if(dx<-92){vota("no",-1);return;}
+  el.classList.add("via");impila();
+}
+pila.addEventListener("pointerup",chiudiDrag);
+pila.addEventListener("pointercancel",()=>{if(drag){const el=drag.el;drag=null;
+  timbri(el,0,0,false);el.classList.add("via");impila();}});
+
+document.getElementById("cmd-si").onclick=()=>vota("si",1);
+document.getElementById("cmd-no").onclick=()=>vota("no",-1);
+document.getElementById("cmd-faccia").onclick=()=>vota("faccia",0);
+document.getElementById("cmd-indietro").onclick=indietro;
+document.getElementById("rivedi").onclick=()=>{
+  indice=0;storia=[];for(const id in stato.voti)manda({tipo:"swipe",id,voto:""});stato.voti={};salva();
+  carte.forEach(el=>{el.classList.remove("via");el.style.opacity="1";
+    el.querySelector(".dettaglio").classList.remove("su");});
+  impila();classifica();apri("mazzo");
+};
+addEventListener("keydown",e=>{
+  if(/input|textarea|select/i.test(e.target.tagName))return;
+  if(!document.getElementById("v-mazzo").classList.contains("on"))return;
+  if(e.key==="ArrowRight"){e.preventDefault();vota("si",1);}
+  else if(e.key==="ArrowLeft"){e.preventDefault();vota("no",-1);}
+  else if(e.key==="ArrowUp"){e.preventDefault();vota("faccia",0);}
+  else if(e.key==="z"||e.key==="Z"){indietro();}
+});
+
+/* ---------------------------------------------------- altre viste ---- */
+function classifica(){
+  const cont=document.getElementById("lista-classifica");
+  const righe=P.map(p=>{const mio=stato.voti[p.id],c=vivo&&vivo.conteggi&&vivo.conteggi[p.id];
+    let tot=c?c.si+c.faccia:0;
+    if(!c&&(mio==="si"||mio==="faccia"))tot=1;
+    return{p,mio,tot};})
+    .sort((a,b)=>b.tot-a.tot);
+  const max=Math.max(1,righe[0].tot);
+  const nc=document.getElementById("nota-classifica");
+  if(nc)nc.textContent=vivo?("In sala: "+vivo.telefoni+(vivo.telefoni===1?" telefono, ":" telefoni, ")+vivo.firme+(vivo.firme===1?" firma":" firme")+", aggiornato "+new Date().toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit",second:"2-digit"})):(online()?"Collegamento al conteggio in corso…":"Conteggio di questo telefono soltanto.");
+  cont.innerHTML=righe.map((r,i)=>
+    '<div class="riga'+(i<3?" top3":"")+'">'+
+      '<span class="pos mono tnum">'+String(i+1).padStart(2,"0")+'</span>'+
+      '<span class="tit"><b>'+esc(r.p.titolo)+
+        (r.mio==="faccia"?'<span class="tua blu">ci metti la faccia</span>':(r.mio==="si"?'<span class="tua">firmata da te</span>':''))+
+        '</b><span class="bar"><i style="width:'+Math.round(r.tot/max*100)+'%"></i></span>'+
+        '<span class="m">'+esc(r.p.tema)+'</span></span>'+
+      '<span class="cif tnum">'+r.tot.toLocaleString("it-IT")+'<span>firme</span></span>'+
+    '</div>').join("");
+}
+document.getElementById("elenco").innerHTML=P.map(p=>
+  '<li><b>'+esc(p.titolo)+'.</b> '+esc(p.claim)+'</li>').join("");
+
+const mf=document.getElementById("modulo-firma"),fe=document.getElementById("f-esito");
+mf.addEventListener("submit",e=>{
+  e.preventDefault();
+  const d=new FormData(mf);
+  stato.firmatario={nome:d.get("nome"),cognome:d.get("cognome"),citta:d.get("citta"),cat:d.get("categoria")};
+  salva();
+  const f=firme();
+  manda({tipo:"adesione",nome:d.get("nome"),cognome:d.get("cognome"),citta:d.get("citta"),cat:d.get("categoria"),firme:f});
+  fe.textContent="Adesione registrata: "+d.get("nome")+" "+d.get("cognome")+", "+d.get("citta")+", con "+f+(f===1?" firma":" firme")+" su 18. Grazie.";
+  fe.classList.add("on");
+  document.getElementById("f-invia").textContent="Adesione registrata";
+});
+
+function muro(){
+  const dalFoglio=(vivo&&vivo.proposte||[]).map(v=>({testo:v.testo,chi:v.chi||"anonimo",sala:true}));
+  const mie=stato.mie.filter(m=>!dalFoglio.some(v=>v.testo===m.testo));
+  const tutte=mie.concat(dalFoglio);
+  document.getElementById("muro").innerHTML=tutte.length?tutte.map(v=>
+    '<div class="voce nuova"><p>'+esc(v.testo)+'</p>'+
+    '<p class="chi">'+esc(v.chi)+(v.sala?" · dalla sala":" · appena arrivata")+'</p></div>').join("")
+    :'<p class="nota">Ancora nessuna: la prima può essere la tua.</p>';
+}
+const mp=document.getElementById("modulo-proposta"),pe=document.getElementById("p-esito");
+mp.addEventListener("submit",e=>{
+  e.preventDefault();
+  const d=new FormData(mp);
+  const testo=String(d.get("testo")).trim();
+  stato.mie.unshift({testo,chi:d.get("nome")+", "+d.get("citta")});
+  manda({tipo:"proposta",testo,nome:d.get("nome"),citta:d.get("citta")});
+  salva();muro();mp.reset();
+  pe.textContent="Proposta arrivata. La leggiamo, cerchiamo il fatto italiano che la tiene in piedi e se regge entra nel mazzo del mese prossimo.";
+  pe.classList.add("on");
+});
+
+/* ---------------------------------------------------- avvio ---------- */
+P.forEach((p,i)=>{const el=creaCarta(p,i);carte.push(el);pila.insertBefore(el,fine);});
+for(const id in stato.voti){const k=P.findIndex(p=>p.id===id);if(k>=0&&k>=indice)indice=k+1;}
+if(indice>P.length)indice=P.length;
+
+if(!stato.guida&&indice===0){
+  const g=document.createElement("div");
+  g.className="guida";
+  g.innerHTML='<h3>Si scorre come sai</h3>'+
+    '<div class="righe">'+
+      '<div><i style="background:#3BAA6C">&rarr;</i><span>a destra: firmo questa proposta</span></div>'+
+      '<div><i style="background:#F4B6BC">&larr;</i><span>a sinistra: non sono d\'accordo</span></div>'+
+      '<div><i style="background:#AEBBF0">&uarr;</i><span>in alto: ci metto la faccia</span></div>'+
+      '<div><i style="background:#FFFFFF">i</i><span>tocca la scheda: il fatto che la tiene in piedi</span></div>'+
+    '</div>'+
+    '<button type="button">Ho capito</button>';
+  g.querySelector("button").onclick=()=>{g.classList.add("via");stato.guida=true;salva();};
+  carte[0].appendChild(g);
+}
+
+impila();classifica();muro();vivoCiclo();
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)vivoCiclo();});
+if(stato.firmatario){
+  fe.textContent="Adesione già registrata: "+stato.firmatario.nome+" "+stato.firmatario.cognome+", "+stato.firmatario.citta+".";
+  fe.classList.add("on");
+}
+let rid;
+addEventListener("resize",()=>{clearTimeout(rid);rid=setTimeout(()=>{
+  carte.forEach(el=>{const cv=el.querySelector("canvas");
+    if(cv.dataset.fatto&&el.style.display!=="none")disegna(cv,P[+el.dataset.i].arte,+el.dataset.i);});
+},220);});
+</script>

@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="it">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Regia del mazzo EcoDigital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,700;125,800;125,900&family=Montserrat:wght@400;500;600;700;800&display=swap">
+<style>
+/* Schermo di sala: QR a sinistra, i numeri e la classifica a destra. Si aggiorna da solo ogni 3 secondi.
+   Palette del Brand Book EcoDigital (call del 01/10/2026). */
+:root{--blu:#293B8E;--blu2:#1F2D6E;--blu3:#141C45;--verde:#09693A;--verde2:#3BAA6C;--giallo:#F7B807;--rosso:#C0202F;
+  --bianco:#FFFFFF;--font:"Montserrat","Helvetica Neue",Arial,sans-serif;--display:"Archivo","Arial Black",Arial,sans-serif}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:radial-gradient(120% 90% at 10% 0%,var(--blu2),var(--blu3) 60%);color:var(--bianco);font-family:var(--font);overflow:hidden}
+h1,h2,h3{margin:0;font-family:var(--display);font-weight:800;font-stretch:125%;line-height:1;letter-spacing:-.01em}
+.mono{font-size:.72vw;letter-spacing:.14em;text-transform:uppercase;font-weight:700;opacity:.8}
+.schermo{display:grid;grid-template-columns:36vw 1fr;gap:3vw;height:100vh;padding:3vw 3.4vw 2.6vw}
+/* ------------------------------------------------ sinistra: QR --- */
+.lato{display:flex;flex-direction:column;justify-content:space-between}
+.marchio{display:flex;align-items:center;gap:1vw}
+.marchio img{height:3.1vw}
+.marchio span{padding:.35vw .7vw;border:1px solid rgba(255,255,255,.3);border-radius:999px}
+.qr-box{background:var(--bianco);border-radius:1.6vw;padding:1.4vw;display:grid;place-items:center;width:28vw;aspect-ratio:1;
+  box-shadow:0 2vw 5vw rgba(0,0,0,.45)}
+.qr-box canvas,.qr-box img{width:100%!important;height:100%!important;image-rendering:pixelated}
+.invito h1{font-size:3.9vw;margin:1.2vw 0 .6vw}
+.invito h1 em{font-style:normal;color:var(--giallo)}
+.invito p{margin:0;font-size:1.15vw;line-height:1.45;opacity:.9;max-width:30vw}
+.gesti{display:grid;gap:.5vw;margin-top:1.1vw}
+.gesti div{display:flex;align-items:center;gap:.8vw;font-size:1.05vw}
+.gesti i{width:2.1vw;height:2.1vw;border-radius:.6vw;display:grid;place-items:center;font-style:normal;font-weight:800;color:var(--blu3);font-size:1.2vw}
+.url{font-size:.95vw;opacity:.7;margin-top:1vw;word-break:break-all}
+/* ------------------------------------------------ destra ----------- */
+.destra{display:grid;grid-template-rows:auto 1fr auto;gap:1.6vw;min-height:0}
+.numeri{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2vw}
+.num{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);border-radius:1.2vw;padding:1.2vw 1.4vw}
+.num b{display:block;font-family:var(--display);font-stretch:125%;font-size:4.2vw;line-height:1;font-variant-numeric:tabular-nums;transition:transform .25s}
+.num b.salta{transform:scale(1.12)}
+.num.firme{background:var(--verde);border-color:var(--verde)}
+.num.faccia{background:var(--giallo);color:var(--blu3);border-color:var(--giallo)}
+.num span{display:block;margin-top:.5vw;font-size:.95vw;opacity:.85}
+.classifica{min-height:0;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;gap:.45vw 2vw;align-content:start}
+.riga{display:grid;grid-template-columns:2.2vw 1fr 4vw;gap:.8vw;align-items:center;padding:.42vw 0;border-bottom:1px solid rgba(255,255,255,.1);
+  transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.riga .pos{font-family:var(--display);font-size:1.3vw;opacity:.55}
+.riga .tit{min-width:0}
+.riga .tit b{display:block;font-size:1vw;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.riga .bar{display:block;height:.5vw;border-radius:999px;background:rgba(255,255,255,.12);margin-top:.35vw;overflow:hidden}
+.riga .bar i{display:block;height:100%;background:var(--verde2);width:0;transition:width .7s cubic-bezier(.2,.8,.2,1)}
+.riga .cif{font-family:var(--display);font-size:1.6vw;text-align:right;font-variant-numeric:tabular-nums}
+.riga.top3 .pos{color:var(--giallo);opacity:1}
+.riga.top3 .bar i{background:var(--giallo)}
+.riga.top3 .tit b{font-size:1.12vw}
+.feed{display:flex;gap:.8vw;overflow:hidden;align-items:center;min-height:3.2vw}
+.feed .mono{flex:0 0 auto;opacity:.5}
+.chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:.5vw;padding:.55vw .9vw;border-radius:999px;font-size:.95vw;font-weight:600;
+  background:rgba(255,255,255,.1);animation:entra .5s cubic-bezier(.2,.8,.2,1) both;white-space:nowrap}
+.chip i{width:.7vw;height:.7vw;border-radius:50%;font-style:normal}
+.chip.si i{background:var(--verde2)}.chip.faccia i{background:var(--giallo)}.chip.no i{background:var(--rosso)}
+@keyframes entra{from{opacity:0;transform:translateX(-1.5vw)}to{opacity:1;transform:none}}
+.stato{position:fixed;right:1.2vw;bottom:.8vw;font-size:.75vw;opacity:.45}
+.stato.err{color:#FFB3B3;opacity:1}
+.regia-cmd{position:fixed;left:1.2vw;bottom:.8vw;display:flex;gap:.6vw}
+.regia-cmd button{font:inherit;font-size:.8vw;padding:.5vw .9vw;border-radius:999px;border:1px solid rgba(255,255,255,.3);background:transparent;color:#fff;cursor:pointer}
+.regia-cmd button:hover{background:rgba(255,255,255,.1)}
+@media(max-aspect-ratio:1/1){
+  body{overflow:auto}
+  .schermo{grid-template-columns:1fr;height:auto;gap:6vw;padding:6vw}
+  .qr-box{width:70vw}
+  .invito h1{font-size:9vw}.invito p,.gesti div{font-size:3.6vw}.gesti i{width:7vw;height:7vw;font-size:4vw}
+  .mono{font-size:2.6vw}.num b{font-size:12vw}.num span{font-size:3vw}
+  .classifica{grid-template-columns:1fr}.riga .tit b{font-size:3.4vw}.riga .cif{font-size:4.5vw}.riga .pos{font-size:4vw}.riga .bar{height:1.5vw}
+  .feed{display:none}.url{font-size:3vw}.marchio img{height:9vw}.marchio span{font-size:2.6vw}
+}
+</style>
+
+<div class="schermo">
+  <section class="lato">
+    <div class="marchio"><img src="../mazzo/istituzionale-negativo.svg" alt="EcoDigital"><span class="mono" id="evento-nome">Napoli · 26 ottobre 2026</span></div>
+    <div>
+      <div class="qr-box" id="qr"></div>
+      <div class="invito">
+        <h1>Inquadra<br>e <em>scorri.</em></h1>
+        <p>18 proposte su ecologia e digitale. Con il dito dici sì o no: ogni scorrimento è una firma, e la vedi arrivare qui.</p>
+        <div class="gesti">
+          <div><i style="background:#3BAA6C">&rarr;</i><span>a destra: <b>firmo</b></span></div>
+          <div><i style="background:#F4B6BC">&larr;</i><span>a sinistra: <b>non sono d'accordo</b></span></div>
+          <div><i style="background:#F7B807">&uarr;</i><span>in alto: <b>ci metto la faccia</b></span></div>
+        </div>
+        <p class="url mono" id="url"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="destra">
+    <div class="numeri">
+      <div class="num"><b id="n-tel">0</b><span>telefoni in sala</span></div>
+      <div class="num firme"><b id="n-firme">0</b><span>firme sotto le proposte</span></div>
+      <div class="num faccia"><b id="n-faccia">0</b><span>ci mettono la faccia</span></div>
+    </div>
+    <div class="classifica" id="classifica"></div>
+    <div class="feed" id="feed"><span class="mono">Ultimi gesti</span></div>
+  </section>
+</div>
+<p class="stato" id="stato">in attesa del primo dato</p>
+<div class="regia-cmd" id="regia-cmd" hidden>
+  <button type="button" id="azzera">Azzera l'evento (dopo le prove)</button>
+</div>
+
+<script src="../mazzo/dati.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const Q=new URLSearchParams(location.search);
+const BACKEND={
+  ENDPOINT:"",   // stesso URL /exec del mazzo
+  EVENTO:Q.get("ev")||"napoli-2026-10-26",
+  REGIA:Q.get("regia")||""
+};
+const NOMI={"napoli-2026-10-26":"Napoli · 26 ottobre 2026"};
+document.getElementById("evento-nome").textContent=NOMI[BACKEND.EVENTO]||BACKEND.EVENTO;
+const urlMazzo=new URL("../mazzo/",location.href).href+(BACKEND.EVENTO==="napoli-2026-10-26"?"":"?ev="+encodeURIComponent(BACKEND.EVENTO));
+document.getElementById("url").textContent=urlMazzo.replace(/^https?:\/\//,"");
+new QRCode(document.getElementById("qr"),{text:urlMazzo,width:1000,height:1000,colorDark:"#141C45",colorLight:"#FFFFFF",correctLevel:QRCode.CorrectLevel.M});
+if(BACKEND.REGIA)document.getElementById("regia-cmd").hidden=false;
+
+const esc=t=>{const d=document.createElement("div");d.textContent=t;return d.innerHTML;};
+const byId=Object.fromEntries(P.map(p=>[p.id,p]));
+const ETI={si:"Firmo",faccia:"Ci metto la faccia",no:"Passo"};
+let prec={},ultimiVisti=new Set(),prima=true;
+
+function numero(id,v){const el=document.getElementById(id);if(el.textContent!==String(v)){el.textContent=v;el.classList.add("salta");setTimeout(()=>el.classList.remove("salta"),260);}}
+
+function disegna(d){
+  numero("n-tel",d.telefoni);numero("n-firme",d.firme);numero("n-faccia",d.faccia);
+  const righe=P.map((p,i)=>{const c=d.conteggi[p.id]||{si:0,faccia:0,no:0};return{p,i,tot:c.si+c.faccia,no:c.no};})
+    .sort((a,b)=>b.tot-a.tot||a.i-b.i);
+  const max=Math.max(1,righe[0].tot);
+  const cont=document.getElementById("classifica");
+  if(prima){cont.innerHTML=righe.map(r=>'<div class="riga" data-id="'+r.p.id+'"><span class="pos">00</span><span class="tit"><b></b><span class="bar"><i></i></span></span><span class="cif">0</span></div>').join("");prima=false;}
+  righe.forEach((r,k)=>{
+    const el=cont.querySelector('[data-id="'+r.p.id+'"]');
+    el.classList.toggle("top3",k<3&&r.tot>0);
+    el.querySelector(".pos").textContent=String(k+1).padStart(2,"0");
+    el.querySelector(".tit b").textContent=r.p.titolo;
+    el.querySelector(".bar i").style.width=Math.round(r.tot/max*100)+"%";
+    el.querySelector(".cif").textContent=r.tot;
+    cont.appendChild(el);
+  });
+  const feed=document.getElementById("feed");
+  (d.ultimi||[]).slice().reverse().forEach(u=>{
+    const k=u.id+"|"+u.voto+"|"+u.ora;if(ultimiVisti.has(k))return;ultimiVisti.add(k);
+    const c=document.createElement("span");c.className="chip "+u.voto;
+    c.innerHTML='<i></i>'+esc(ETI[u.voto]||u.voto)+' · '+esc((byId[u.id]||{}).titolo||u.id);
+    feed.insertBefore(c,feed.children[1]||null);
+    while(feed.children.length>7)feed.removeChild(feed.lastChild);
+  });
+  if(ultimiVisti.size>400)ultimiVisti=new Set([...ultimiVisti].slice(-100));
+}
+
+async function leggi(){
+  const st=document.getElementById("stato");
+  if(!BACKEND.ENDPOINT){st.textContent="Backend non collegato: inserisci l'URL /exec in BACKEND.ENDPOINT";st.className="stato err";return;}
+  try{
+    const r=await fetch(BACKEND.ENDPOINT+"?ev="+encodeURIComponent(BACKEND.EVENTO)+"&_="+Date.now());
+    const d=await r.json();if(!d||!d.ok)throw new Error(d&&d.errore||"server");
+    disegna(d);st.textContent="aggiornato "+new Date().toLocaleTimeString("it-IT");st.className="stato";
+  }catch(e){st.textContent="collegamento perso, riprovo ("+e.message+")";st.className="stato err";}
+}
+leggi();setInterval(leggi,3000);
+
+document.getElementById("azzera").onclick=async()=>{
+  if(!confirm("Azzero tutte le firme, adesioni e proposte dell'evento "+BACKEND.EVENTO+"?"))return;
+  const r=await fetch(BACKEND.ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({tipo:"svuota",ev:BACKEND.EVENTO,regia:BACKEND.REGIA})});
+  const j=await r.json();alert(j.ok?"Evento azzerato.":"Errore: "+j.errore);
+  ultimiVisti=new Set();document.getElementById("feed").innerHTML='<span class="mono">Ultimi gesti</span>';leggi();
+};
+</script>
+</html>
