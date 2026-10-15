@@ -464,7 +464,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--forest);font-size:.9r
    3. L'app: viste, mazzo, gesti
    ===================================================================== */
 const BACKEND={
-  ENDPOINT:"",   // URL /exec del Web App Apps Script «Mazzo EcoDigital - backend» (vuoto = tutto resta nel browser)
+  ENDPOINT:"https://script.google.com/macros/s/AKfycbwgua7AdjXYd7kqRAxWRqEdcJ4XZG1JIbTTQwa4aYOjTq75Z6CHJfMdQuNcql7vhYKf/exec",   // Web App Apps Script «Mazzo EcoDigital - backend» (account alex.dicapuacn), deployment v1 del 15/10/2026
   EVENTO:new URLSearchParams(location.search).get("ev")||"napoli-2026-10-26"
 };
 const MEM="ecodigital-mazzo-"+BACKEND.EVENTO;
