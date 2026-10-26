@@ -1,7 +1,7 @@
 /* =====================================================================
    1. Le 18 proposte di settembre 2026
    ===================================================================== */
-const P = [
+const P_TUTTE = [
 {id:"robot70",tema:"Lavoro",titolo:"Automazione e tutela dell'occupazione",
  claim:"Nelle imprese con oltre 50 dipendenti il rapporto tra lavoratori e sistemi automatizzati resta di almeno 70 a 30. Chi supera la soglia versa un contributo destinato alla riqualificazione professionale.",
  fatto:"A Taranto il Just Transition Fund ha messo <b>20 milioni di euro</b> nei corsi per i lavoratori in cassa integrazione, indotto compreso: 200 ore di formazione e 2.500 euro a fine percorso. Nel 2024 l'Europa occidentale ha toccato il record di <b>267 robot ogni 10.000 addetti</b> dell'industria, e l'Italia è tra i primi venti paesi al mondo (IFR, World Robotics 2025). Più robot in fabbrica possono voler dire lavoro migliore per tutti. Il contributo di chi supera il tetto porta corsi come questi in ogni regione, per chi deve imparare un mestiere nuovo.<br><span class=\"fonti\">Fonti: <a href=\"https://ifr.org/ifr-press-releases/robot-density-surges-in-europe-asia-and-americas\" target=\"_blank\" rel=\"noopener\">IFR, densità dei robot</a></span>",
@@ -128,6 +128,10 @@ const P = [
  arte:{cielo:["#1B4332","#0A2016"],sole:null,terra:"#071710",oriz:.84,
    figure:[["bersaglio",.5,1.2,"#3FBE7E"]],barre:"#F2F7F0"}}
 ];
+
+/* Napoli 26/10: solo le 10 più solide (scelta di Dix) */
+const DIECI=["dati30","etichettaia","mare3030","scuolaora","paesaggio","algoritmo","telefonovecchio","pcriusati","tecnicocivico","acquaperdite"];
+const P = DIECI.map(id=>P_TUTTE.find(x=>x.id===id));
 
 const ESEMPI_PROPOSTE = [
  {testo:"Ogni scuola pubblica pubblica sul sito quanta energia consuma, mese per mese, e i ragazzi ci fanno un progetto.",chi:"Serena D., Bari",esempio:true},

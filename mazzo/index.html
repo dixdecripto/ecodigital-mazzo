@@ -291,9 +291,9 @@ details summary{cursor:pointer;font-weight:600;color:var(--forest);font-size:.9r
 <div class="fuori">
   <aside class="contesto">
     <img class="logo-fuori" src="mono-bianco.svg" alt="EcoDigital">
-    <p class="occhiello mono">Napoli, 26 ottobre 2026 · 18 schede</p>
+    <p class="occhiello mono">Napoli, 26 ottobre 2026 · 10 schede</p>
     <h1>Sei<br>d'accordo?<br><em>Dillo in<br>due secondi.</em></h1>
-    <p>Ogni mese la rete EcoDigital mette in gioco 18 proposte su ecologia e digitale. Le guardi una per una e dici sì o no. Lo scorrimento vale come adesione: conta come una firma sotto quella proposta.</p>
+    <p>Ogni mese la rete EcoDigital mette in gioco 10 proposte su ecologia e digitale. Le guardi una per una e dici sì o no. Lo scorrimento vale come adesione: conta come una firma sotto quella proposta.</p>
     <div class="gesti">
       <div><i style="background:#3BAA6C">&rarr;</i><span>Scorri a destra: <b>firmo questa proposta</b></span></div>
       <div><i style="background:#F4B6BC">&larr;</i><span>Scorri a sinistra: <b>non sono d'accordo</b></span></div>
@@ -328,7 +328,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--forest);font-size:.9r
         <div class="pila" id="pila" aria-live="polite">
           <div class="fine" id="fine">
             <p class="mono" style="color:var(--signal-2)">Mazzo finito</p>
-            <p class="num tnum" id="fine-num">0/18</p>
+            <p class="num tnum" id="fine-num">0/10</p>
             <h2 id="fine-tit">Hai firmato</h2>
             <p id="fine-txt">Registra l'adesione, così le firme di stasera hanno un nome e una città.</p>
             <button class="b b-sig" type="button" data-va="adesione">Firma l'adesione</button>
@@ -408,7 +408,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--forest);font-size:.9r
           <div class="tappe">
             <div class="tappa">
               <p class="n">Dal primo all'ultimo giorno</p>
-              <h3>18 proposte in gioco</h3>
+              <h3>10 proposte in gioco</h3>
               <p>Ogni scheda dice una cosa sola, con il fatto italiano che la tiene in piedi. Si firma scorrendo, senza moduli lunghi e senza iscriversi a niente.</p>
             </div>
             <div class="tappa">
@@ -419,13 +419,13 @@ details summary{cursor:pointer;font-weight:600;color:var(--forest);font-size:.9r
             <div class="tappa">
               <p class="n">Mese dopo</p>
               <h3>Il mazzo si rifà</h3>
-              <p>Le proposte che avete scritto voi vengono lette una per una, verificate con un fatto già esistente in Italia, e le migliori entrano nelle 18 schede del mese nuovo, col nome di chi le ha proposte.</p>
+              <p>Le proposte che avete scritto voi vengono lette una per una, verificate con un fatto già esistente in Italia, e le migliori entrano nelle schede del mese nuovo, col nome di chi le ha proposte.</p>
             </div>
           </div>
           <p class="avviso"><b>Il mazzo di stasera è il primo.</b> Le tappe fatte dal 2021 a oggi sono 31, da Milano a Quartu Sant'Elena. Scrivici a info@ecodigital.it.</p>
 
           <details style="margin-top:20px">
-            <summary>Leggi le 18 proposte in elenco, senza scorrimento</summary>
+            <summary>Leggi le 10 proposte in elenco, senza scorrimento</summary>
             <ol class="elenco" id="elenco"></ol>
           </details>
           <p class="nota" style="margin-top:22px">I gesti sul mazzo sono anonimi: ogni telefono ha un codice casuale e il foglio registra solo quel codice, la proposta e il gesto.</p>
@@ -449,7 +449,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--forest);font-size:.9r
         </button>
       </div>
       <div class="stato">
-        <span class="mono tnum" id="conta-testo">01 di 18</span>
+        <span class="mono tnum" id="conta-testo">01 di 10</span>
         <span class="barra"><i id="avanz" style="width:0%"></i></span>
         <span class="mono tnum" id="conta-firme">0 firme</span>
       </div>
@@ -560,7 +560,7 @@ function impila(){
   fine.classList.toggle("on",finito);
   ["cmd-si","cmd-no","cmd-faccia"].forEach(id=>document.getElementById(id).disabled=finito);
   document.getElementById("cmd-indietro").disabled=!storia.length;
-  document.getElementById("conta-testo").textContent=finito?"finito":String(Math.min(indice+1,18)).padStart(2,"0")+" di 18";
+  document.getElementById("conta-testo").textContent=finito?"finito":String(Math.min(indice+1,P.length)).padStart(2,"0")+" di "+P.length;
   document.getElementById("avanz").style.width=(indice/P.length*100)+"%";
   const f=firme();
   document.getElementById("conta-firme").textContent=f+(f===1?" firma":" firme");
@@ -573,7 +573,7 @@ function firme(){return Object.values(stato.voti).filter(v=>v==="si"||v==="facci
 
 function finale(){
   const f=firme(),fa=Object.values(stato.voti).filter(v=>v==="faccia").length;
-  document.getElementById("fine-num").textContent=f+"/18";
+  document.getElementById("fine-num").textContent=f+"/"+P.length;
   document.getElementById("fine-tit").textContent=f===0?"Nessuna firma":(f===1?"Una proposta firmata":"Proposte firmate");
   document.getElementById("fine-txt").textContent=fa>0
     ? "Su "+fa+(fa===1?" proposta hai detto che ci metti la faccia. ":" proposte hai detto che ci metti la faccia. ")+"Registra l'adesione, così le firme di stasera hanno un nome e una città."
@@ -691,7 +691,7 @@ mf.addEventListener("submit",e=>{
   salva();
   const f=firme();
   manda({tipo:"adesione",nome:d.get("nome"),cognome:d.get("cognome"),citta:d.get("citta"),cat:d.get("categoria"),firme:f});
-  fe.textContent="Adesione registrata: "+d.get("nome")+" "+d.get("cognome")+", "+d.get("citta")+", con "+f+(f===1?" firma":" firme")+" su 18. Grazie.";
+  fe.textContent="Adesione registrata: "+d.get("nome")+" "+d.get("cognome")+", "+d.get("citta")+", con "+f+(f===1?" firma":" firme")+" su "+P.length+". Grazie.";
   fe.classList.add("on");
   document.getElementById("f-invia").textContent="Adesione registrata";
 });
