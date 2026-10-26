@@ -129,8 +129,8 @@ const P_TUTTE = [
    figure:[["bersaglio",.5,1.2,"#3FBE7E"]],barre:"#F2F7F0"}}
 ];
 
-/* Napoli 26/10: solo le 10 più solide (scelta di Dix) */
-const DIECI=["dati30","etichettaia","mare3030","scuolaora","paesaggio","algoritmo","telefonovecchio","pcriusati","tecnicocivico","acquaperdite"];
+/* Napoli 26/10: le 10 più solide più il tetto ai robot (scelta di Dix) */
+const DIECI=["robot70","dati30","etichettaia","mare3030","scuolaora","paesaggio","algoritmo","telefonovecchio","pcriusati","tecnicocivico","acquaperdite"];
 const P = DIECI.map(id=>P_TUTTE.find(x=>x.id===id));
 
 const ESEMPI_PROPOSTE = [
