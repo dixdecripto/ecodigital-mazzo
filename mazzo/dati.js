@@ -2,10 +2,10 @@
    1. Le 18 proposte di settembre 2026
    ===================================================================== */
 const P_TUTTE = [
-{id:"robot70",tema:"Lavoro",titolo:"Automazione e tutela dell'occupazione",
- claim:"Nelle imprese con oltre 50 dipendenti il rapporto tra lavoratori e sistemi automatizzati resta di almeno 70 a 30. Chi supera la soglia versa un contributo destinato alla riqualificazione professionale.",
- fatto:"A Taranto il Just Transition Fund ha messo <b>20 milioni di euro</b> nei corsi per i lavoratori in cassa integrazione, indotto compreso: 200 ore di formazione e 2.500 euro a fine percorso. Nel 2024 l'Europa occidentale ha toccato il record di <b>267 robot ogni 10.000 addetti</b> dell'industria, e l'Italia è tra i primi venti paesi al mondo (IFR, World Robotics 2025). Più robot in fabbrica possono voler dire lavoro migliore per tutti. Il contributo di chi supera il tetto porta corsi come questi in ogni regione, per chi deve imparare un mestiere nuovo.<br><span class=\"fonti\">Fonti: <a href=\"https://ifr.org/ifr-press-releases/robot-density-surges-in-europe-asia-and-americas\" target=\"_blank\" rel=\"noopener\">IFR, densità dei robot</a></span>",
- firme:742,
+{id:"robot70",tema:"Lavoro",titolo:"Robot umanoidi al massimo al 30%",
+ claim:"Nelle imprese con oltre 50 dipendenti i robot umanoidi non superano il 30% della forza lavoro: almeno 70 su 100 restano persone. Chi supera la soglia versa un contributo destinato alla riqualificazione professionale.",
+ fatto:"A Taranto il Just Transition Fund ha messo <b>20 milioni di euro</b> nei corsi per i lavoratori in cassa integrazione, indotto compreso: 200 ore di formazione e 2.500 euro a fine percorso. I robot possono voler dire lavoro migliore per tutti, se chi perde un mestiere ne impara uno nuovo. Il contributo di chi supera il tetto porta corsi come questi in ogni regione."
+, firme:742,
  arte:{cielo:["#1B4332","#0A2016"],sole:["#E0A100",.76,.26,.13],terra:"#071710",oriz:.74,trama:"punti",
    figure:[["omino",.22,1,"#0B1F14"],["omino",.34,.95,"#0B1F14"],["omino",.46,1.02,"#0B1F14"],["robot",.66,1.05,"#E0A100"]]}},
 
