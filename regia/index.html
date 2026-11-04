@@ -126,7 +126,9 @@ const NOMI={"napoli-2026-10-26":"Napoli · 26 ottobre 2026"};
 document.getElementById("evento-nome").textContent=NOMI[BACKEND.EVENTO]||BACKEND.EVENTO;
 const urlMazzo=new URL("../mazzo/",location.href).href+(BACKEND.EVENTO==="napoli-2026-10-26"?"":"?ev="+encodeURIComponent(BACKEND.EVENTO));
 document.getElementById("url").textContent=urlMazzo.replace(/^https?:\/\//,"");
-new QRCode(document.getElementById("qr"),{text:urlMazzo,width:1000,height:1000,colorDark:"#141C45",colorLight:"#FFFFFF",correctLevel:QRCode.CorrectLevel.M});
+/* se cdnjs non risponde il QR manca, ma classifica e numeri devono continuare ad aggiornarsi */
+try{new QRCode(document.getElementById("qr"),{text:urlMazzo,width:1000,height:1000,colorDark:"#141C45",colorLight:"#FFFFFF",correctLevel:QRCode.CorrectLevel.M});}
+catch(e){console.error("QR non disponibile",e);}
 if(BACKEND.REGIA)document.getElementById("regia-cmd").hidden=false;
 
 const esc=t=>{const d=document.createElement("div");d.textContent=t;return d.innerHTML;};
@@ -163,21 +165,37 @@ function disegna(d){
   if(ultimiVisti.size>400)ultimiVisti=new Set([...ultimiVisti].slice(-100));
 }
 
+/* fetch con un tetto di attesa: se Apps Script si pianta lo schermo lo dice invece di restare fermo */
+function chiama(url,opz,ms){
+  const ac=typeof AbortController==="function"?new AbortController():null;
+  const tm=ac?setTimeout(()=>ac.abort(),ms||10000):0;
+  return fetch(url,Object.assign({},opz,ac?{signal:ac.signal}:{}))
+    .then(r=>{if(!r.ok)throw new Error("http "+r.status);return r.json();})
+    .finally(()=>clearTimeout(tm));
+}
+let leggendo=false;
 async function leggi(){
   const st=document.getElementById("stato");
   if(!BACKEND.ENDPOINT){st.textContent="Backend non collegato: inserisci l'URL /exec in BACKEND.ENDPOINT";st.className="stato err";return;}
+  if(leggendo)return;leggendo=true;
   try{
-    const r=await fetch(BACKEND.ENDPOINT+"?ev="+encodeURIComponent(BACKEND.EVENTO)+"&_="+Date.now());
-    const d=await r.json();if(!d||!d.ok)throw new Error(d&&d.errore||"server");
+    const d=await chiama(BACKEND.ENDPOINT+"?ev="+encodeURIComponent(BACKEND.EVENTO)+"&_="+Date.now(),{},10000);
+    if(!d||!d.ok)throw new Error(d&&d.errore||"server");
+    if(!d.conteggi||typeof d.conteggi!=="object")d.conteggi={};
     disegna(d);st.textContent="aggiornato "+new Date().toLocaleTimeString("it-IT");st.className="stato";
-  }catch(e){st.textContent="collegamento perso, riprovo ("+e.message+")";st.className="stato err";}
+  }catch(e){st.textContent="collegamento perso, riprovo ("+(e.name==="AbortError"?"tempo scaduto":e.message)+")";st.className="stato err";}
+  finally{leggendo=false;}
 }
-leggi();setInterval(leggi,3000);
+/* una lettura alla volta, 3 s dopo la fine della precedente: con setInterval le richieste lente si accavallavano */
+(function ciclo(){leggi().finally(()=>setTimeout(ciclo,3000));})();
 
 document.getElementById("azzera").onclick=async()=>{
   if(!confirm("Azzero tutte le firme, adesioni e proposte dell'evento "+BACKEND.EVENTO+"?"))return;
-  const r=await fetch(BACKEND.ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({tipo:"svuota",ev:BACKEND.EVENTO,regia:BACKEND.REGIA})});
-  const j=await r.json();alert(j.ok?"Evento azzerato.":"Errore: "+j.errore);
+  try{
+    const j=await chiama(BACKEND.ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({tipo:"svuota",ev:BACKEND.EVENTO,regia:BACKEND.REGIA})},20000);
+    alert(j&&j.ok?"Evento azzerato.":"Errore: "+(j&&j.errore));
+    if(!j||!j.ok)return;
+  }catch(e){alert("Errore: "+(e.name==="AbortError"?"tempo scaduto":e.message));return;}
   ultimiVisti=new Set();document.getElementById("feed").innerHTML='<span class="mono">Ultimi gesti</span>';leggi();
 };
 </script>

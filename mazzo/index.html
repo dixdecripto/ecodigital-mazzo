@@ -25,9 +25,8 @@
   --display:"Archivo","ArchivoLocale","Arial Black","Helvetica Neue",Arial,sans-serif;
   --mono:"Montserrat","MontserratLocale","Helvetica Neue",Arial,sans-serif;
 }
-/* riserva: se Google Fonts non risponde, i file del kit accanto (in locale) */
-@font-face{font-family:"ArchivoLocale";src:url("../kit/fonts/Archivo-wdth-wght.ttf") format("truetype");font-weight:100 900;font-stretch:62% 125%}
-@font-face{font-family:"MontserratLocale";src:url("../kit/fonts/Montserrat-wght.ttf") format("truetype");font-weight:100 900}
+/* la riserva locale ../kit/fonts non e pubblicata in questo repository (dava 404 a ogni apertura):
+   se Google Fonts non risponde si passa ai caratteri di sistema della pila --font/--display */
 *{box-sizing:border-box}
 html,body{height:100%}
 body{margin:0;background:var(--deeper);color:var(--ink);font-family:var(--font);
@@ -73,10 +72,10 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   font-size:.82rem;color:rgba(255,255,255,.5)}
 
 /* ------------------------------------------------ guscio dell'app ---- */
-.app{position:relative;width:100%;height:100dvh;display:grid;
+.app{position:relative;width:100%;height:100%;height:100dvh;display:grid;
   grid-template-rows:auto minmax(0,1fr) auto;background:var(--carta);overflow:hidden}
 @media(min-width:1000px){
-  .app{width:428px;height:min(92dvh,868px);border-radius:30px;
+  .app{width:428px;height:min(92vh,868px);height:min(92dvh,868px);border-radius:30px;
     box-shadow:0 30px 70px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.12)}
 }
 .app-top{display:flex;align-items:center;justify-content:space-between;gap:10px;
@@ -309,16 +308,16 @@ details summary{cursor:pointer;font-weight:600;color:var(--forest);font-size:.9r
     <header class="app-top">
       <div class="marchio"><img src="istituzionale-negativo.svg" alt="EcoDigital"><span class="mono">Napoli · 26/10</span></div>
       <nav class="linguette" role="tablist">
-        <button class="ling" data-v="mazzo" role="tab" aria-current="true" title="Il mazzo" aria-label="Il mazzo">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="5" width="12" height="15" rx="2.4"/><path d="M8.6 3.4l8.3 1.8a2.4 2.4 0 0 1 1.8 2.9l-2.3 10.6"/></svg>
+        <button class="ling" data-v="mazzo" id="tab-mazzo" role="tab" aria-controls="v-mazzo" aria-selected="true" aria-current="true" title="Il mazzo" aria-label="Il mazzo">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="5" width="12" height="15" rx="2.4"/><path d="M8.6 3.4l8.3 1.8a2.4 2.4 0 0 1 1.8 2.9l-2.3 10.6"/></svg>
         </button>
-        <button class="ling" data-v="classifica" role="tab" title="Classifica" aria-label="Classifica">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M5 20V9M12 20V4M19 20v-7"/></svg>
+        <button class="ling" data-v="classifica" id="tab-classifica" role="tab" aria-controls="v-classifica" aria-selected="false" title="Classifica" aria-label="Classifica">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M5 20V9M12 20V4M19 20v-7"/></svg>
         </button>
-        <button class="ling" data-v="proponi" role="tab" title="Proponi la tua" aria-label="Proponi la tua">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18.5V21h2.6L18 9.6 15.4 7 4 18.5z"/><path d="M15.4 7l1.8-1.8a1.8 1.8 0 0 1 2.6 0l0 0a1.8 1.8 0 0 1 0 2.6L18 9.6"/></svg>
+        <button class="ling" data-v="proponi" id="tab-proponi" role="tab" aria-controls="v-proponi" aria-selected="false" title="Proponi la tua" aria-label="Proponi la tua">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18.5V21h2.6L18 9.6 15.4 7 4 18.5z"/><path d="M15.4 7l1.8-1.8a1.8 1.8 0 0 1 2.6 0l0 0a1.8 1.8 0 0 1 0 2.6L18 9.6"/></svg>
         </button>
-        <button class="ling" data-v="adesione" role="tab" title="La tua adesione" aria-label="La tua adesione">
+        <button class="ling" data-v="adesione" id="tab-adesione" role="tab" aria-controls="v-adesione" aria-selected="false" title="La tua adesione" aria-label="La tua adesione">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8.2" r="3.6"/><path d="M4.8 20c.6-3.7 3.6-5.8 7.2-5.8s6.6 2.1 7.2 5.8"/></svg>
           <span class="bollo tnum" id="bollo" hidden>0</span>
         </button>
@@ -327,7 +326,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--forest);font-size:.9r
 
     <div class="corpo">
       <!-- ---------------------------------------------- il mazzo ----- -->
-      <section class="vista v-mazzo on" id="v-mazzo" role="tabpanel">
+      <section class="vista v-mazzo on" id="v-mazzo" role="tabpanel" aria-labelledby="tab-mazzo">
         <div class="pila" id="pila" aria-live="polite">
           <div class="fine" id="fine">
             <p class="mono" style="color:var(--signal-2)">Mazzo finito</p>
@@ -341,7 +340,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--forest);font-size:.9r
       </section>
 
       <!-- ---------------------------------------------- classifica --- -->
-      <section class="vista" id="v-classifica" role="tabpanel">
+      <section class="vista" id="v-classifica" role="tabpanel" aria-labelledby="tab-classifica">
         <div class="imbottita">
           <div class="titolo-vista">
             <h2>Le più firmate</h2>
@@ -353,7 +352,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--forest);font-size:.9r
       </section>
 
       <!-- ---------------------------------------------- proponi ------ -->
-      <section class="vista" id="v-proponi" role="tabpanel">
+      <section class="vista" id="v-proponi" role="tabpanel" aria-labelledby="tab-proponi">
         <div class="imbottita">
           <div class="titolo-vista">
             <h2>Scrivine una tu</h2>
@@ -378,7 +377,7 @@ details summary{cursor:pointer;font-weight:600;color:var(--forest);font-size:.9r
       </section>
 
       <!-- ---------------------------------------------- adesione ----- -->
-      <section class="vista" id="v-adesione" role="tabpanel">
+      <section class="vista" id="v-adesione" role="tabpanel" aria-labelledby="tab-adesione">
         <div class="imbottita">
           <div class="titolo-vista">
             <h2>La tua adesione</h2>
@@ -467,35 +466,64 @@ details summary{cursor:pointer;font-weight:600;color:var(--forest);font-size:.9r
    3. L'app: viste, mazzo, gesti
    ===================================================================== */
 const BACKEND={
-  ENDPOINT:"https://script.google.com/macros/s/AKfycbwgua7AdjXYd7kqRAxWRqEdcJ4XZG1JIbTTQwa4aYOjTq75Z6CHJfMdQuNcql7vhYKf/exec",   // Web App Apps Script «Mazzo EcoDigital - backend» (account alex.dicapuacn), deployment v1 del 15/10/2026
+  ENDPOINT:"https://script.google.com/macros/s/AKfycbwgua7AdjXYd7kqRAxWRqEdcJ4XZG1JIbTTQwa4aYOjTq75Z6CHJfMdQuNcql7vhYKf/exec",   // Web App Apps Script «Mazzo EcoDigital - backend», deployment v1 del 15/10/2026
   EVENTO:new URLSearchParams(location.search).get("ev")||"napoli-2026-10-26"
 };
-const MEM="ecodigital-mazzo-"+BACKEND.EVENTO;
+const MEM="ecodigital-mazzo-"+BACKEND.EVENTO,MEM_CODA=MEM+"-coda";
 let stato={voti:{},firmatario:null,mie:[],guida:false,dev:""};
 try{const s=localStorage.getItem(MEM);if(s)stato=Object.assign(stato,JSON.parse(s));}catch(e){}
+if(!stato.voti||typeof stato.voti!=="object")stato.voti={};
+if(!Array.isArray(stato.mie))stato.mie=[];
 if(!stato.dev){stato.dev=Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-4);}
 function salva(){try{localStorage.setItem(MEM,JSON.stringify(stato));}catch(e){}}
 salva();
-/* ---- il filo col foglio: ogni gesto parte subito, in coda se la rete manca ---- */
+/* fetch con un tetto di attesa: se Apps Script non risponde la coda non resta bloccata */
+function chiama(url,opz,ms){
+  const ac=typeof AbortController==="function"?new AbortController():null;
+  const tm=ac?setTimeout(()=>ac.abort(),ms||15000):0;
+  return fetch(url,Object.assign({},opz,ac?{signal:ac.signal}:{}))
+    .then(r=>{if(!r.ok)throw new Error("http "+r.status);return r.json();})
+    .finally(()=>clearTimeout(tm));
+}
+/* ---- il filo col foglio: ogni gesto parte subito, in coda se la rete manca ----
+   La coda e salvata sul telefono: se si chiude la pagina col backend giu, i gesti
+   ripartono alla riapertura invece di perdersi. Ogni voce ha dev+t (ms) che la
+   rende riconoscibile: un reinvio dopo un timeout si puo scartare lato foglio. */
 const online=()=>!!BACKEND.ENDPOINT;
-let coda=[],inviando=false;
-function manda(o){if(!online())return;coda.push(Object.assign({ev:BACKEND.EVENTO,dev:stato.dev,t:new Date().toISOString()},o));spedisci();}
+let coda=[],inviando=false,tentativi=0,ritentaTimer=null;
+try{const c=JSON.parse(localStorage.getItem(MEM_CODA)||"[]");if(Array.isArray(c))coda=c;}catch(e){}
+function salvaCoda(){try{coda.length?localStorage.setItem(MEM_CODA,JSON.stringify(coda)):localStorage.removeItem(MEM_CODA);}catch(e){}}
+let ultimoT=0;
+function adesso(){let n=Date.now();if(n<=ultimoT)n=ultimoT+1;ultimoT=n;return new Date(n).toISOString();}
+function manda(o){if(!online())return;coda.push(Object.assign({ev:BACKEND.EVENTO,dev:stato.dev,t:adesso()},o));salvaCoda();spedisci();}
 async function spedisci(){
-  if(inviando||!coda.length)return;inviando=true;
+  if(inviando||!coda.length)return;inviando=true;clearTimeout(ritentaTimer);
   const lotto=coda.slice(0,20);   /* tutti i gesti in attesa partono in una chiamata sola */
-  try{const r=await fetch(BACKEND.ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
-      body:JSON.stringify({tipo:"lotto",ev:BACKEND.EVENTO,dev:stato.dev,voci:lotto})});
-    const j=await r.json();if(!j||!j.ok)throw new Error((j&&j.errore)||"server");coda.splice(0,lotto.length);}
-  catch(e){setTimeout(()=>{inviando=false;spedisci();},2000+Math.random()*2000);return;}
+  try{const j=await chiama(BACKEND.ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify({tipo:"lotto",ev:BACKEND.EVENTO,dev:stato.dev,voci:lotto})},15000);
+    if(!j||!j.ok)throw new Error((j&&j.errore)||"server");
+    coda.splice(0,lotto.length);salvaCoda();tentativi=0;}
+  catch(e){
+    /* attesa crescente 2s, 4s, 8s... fino a 30s: con la sala intera offline non si martella Apps Script */
+    tentativi++;inviando=false;
+    const attesa=Math.min(30000,2000*Math.pow(2,Math.min(tentativi-1,4)))*(0.75+Math.random()*0.5);
+    ritentaTimer=setTimeout(spedisci,attesa);return;}
   inviando=false;if(coda.length)spedisci();
 }
-let vivo=null,vivoTimer=null;
+addEventListener("online",()=>{tentativi=0;if(!inviando)spedisci();});
+let vivo=null,vivoTimer=null,leggendo=false;
 async function leggi(){
-  if(!online())return;
-  try{const r=await fetch(BACKEND.ENDPOINT+"?ev="+encodeURIComponent(BACKEND.EVENTO)+"&_="+Date.now());
-    const j=await r.json();if(j&&j.ok){vivo=j;classifica();muro();}}catch(e){}
+  if(!online()||leggendo)return;leggendo=true;
+  try{const j=await chiama(BACKEND.ENDPOINT+"?ev="+encodeURIComponent(BACKEND.EVENTO)+"&_="+Date.now(),{},12000);
+    if(j&&j.ok){vivo=j;classifica();muro();}}catch(e){}
+  leggendo=false;
 }
-function vivoCiclo(){clearTimeout(vivoTimer);leggi();vivoTimer=setTimeout(vivoCiclo,document.hidden?30000:8000);}
+/* il conteggio di sala serve solo in Classifica e in Proponi: lì si legge ogni 8 s,
+   nel mazzo non si interroga Apps Script (con 300 telefoni erano ~40 richieste al secondo) */
+let vistaOn="mazzo";
+function vivoCiclo(){clearTimeout(vivoTimer);
+  if(document.hidden||(vistaOn!=="classifica"&&vistaOn!=="proponi"))return;
+  leggi();vivoTimer=setTimeout(vivoCiclo,8000);}
 function esc(t){const d=document.createElement("div");d.textContent=t;return d.innerHTML;}
 
 const pila=document.getElementById("pila"),fine=document.getElementById("fine"),
@@ -505,9 +533,11 @@ let carte=[],indice=0,storia=[],appenaTrascinato=false;
 /* ---------------------------------------------------- viste ---------- */
 function apri(v){
   document.querySelectorAll(".vista").forEach(s=>s.classList.toggle("on",s.id==="v-"+v));
-  document.querySelectorAll(".ling").forEach(b=>b.setAttribute("aria-current",String(b.dataset.v===v)));
+  document.querySelectorAll(".ling").forEach(b=>{const on=String(b.dataset.v===v);
+    b.setAttribute("aria-current",on);b.setAttribute("aria-selected",on);});
   azioni.style.display=v==="mazzo"?"grid":"none";
   const s=document.getElementById("v-"+v);if(s)s.scrollTop=0;
+  vistaOn=v;vivoCiclo();
 }
 document.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>apri(b.dataset.v));
 document.querySelectorAll("[data-va]").forEach(b=>b.onclick=()=>apri(b.dataset.va));
@@ -518,7 +548,7 @@ function creaCarta(p,i){
   el.className="carta con-foto";
   el.innerHTML=
     '<canvas aria-hidden="true"></canvas>'+
-    '<img class="foto" src="foto/'+p.id+'.jpg" alt="" draggable="false" decoding="async" onerror="this.parentNode.classList.remove(\'con-foto\');this.remove()">'+
+    '<img class="foto" src="foto/'+p.id+'.jpg" alt="" draggable="false" decoding="async" loading="lazy" onerror="this.parentNode.classList.remove(\'con-foto\');this.remove()">'+
     '<div class="velo"></div>'+
     '<div class="segmenti" aria-hidden="true">'+P.map((_,k)=>'<i class="'+(k<=i?"fatto":"")+'"></i>').join("")+'</div>'+
     '<span class="tema mono">'+esc(p.tema)+'</span>'+
@@ -534,19 +564,34 @@ function creaCarta(p,i){
       '<p class="mono et">Il fatto</p><p>'+p.fatto+'</p>'+
       '<button class="chiudi" type="button">Torna alla scheda</button></div>';
   el.dataset.i=i;
-  const det=el.querySelector(".dettaglio");
-  el.querySelector(".tondo-i").onclick=e=>{e.stopPropagation();det.classList.add("su");};
-  el.querySelector(".chiudi").onclick=e=>{e.stopPropagation();det.classList.remove("su");};
+  el.setAttribute("aria-label",p.titolo);
+  const det=el.querySelector(".dettaglio"),ti=el.querySelector(".tondo-i");
+  det.setAttribute("role","region");det.setAttribute("aria-label","Il fatto: "+p.titolo);det.tabIndex=-1;
+  det.inert=true;   /* chiuso: fuori dal Tab e dal lettore di schermo (stava sotto la carta, ma i link si raggiungevano) */
+  ti.setAttribute("aria-expanded","false");
+  el.querySelector(".tondo-i").onclick=e=>{e.stopPropagation();apriDettaglio(el);};
+  el.querySelector(".chiudi").onclick=e=>{e.stopPropagation();chiudiDettaglio(el,true);};
   el.addEventListener("click",e=>{
     if(appenaTrascinato)return;
     if(e.target.closest(".dettaglio,.tondo-i,.guida"))return;
-    det.classList.add("su");});
+    apriDettaglio(el);});
   return el;
 }
+function apriDettaglio(el){const det=el.querySelector(".dettaglio");
+  det.inert=false;det.classList.add("su");el.querySelector(".tondo-i").setAttribute("aria-expanded","true");
+  try{det.focus({preventScroll:true});}catch(e){det.focus();}}
+function chiudiDettaglio(el,rimettiFuoco){const det=el.querySelector(".dettaglio");
+  if(!det.classList.contains("su"))return;
+  const ti=el.querySelector(".tondo-i");
+  det.classList.remove("su");ti.setAttribute("aria-expanded","false");
+  if(rimettiFuoco)ti.focus();
+  det.inert=true;}
 
 function impila(){
   carte.forEach((el,k)=>{
     const pos=k-indice;
+    /* solo la carta in cima si legge e si raggiunge col Tab: quelle sotto e quelle gia volate via no */
+    el.inert=pos!==0;
     if(pos<0){el.style.pointerEvents="none";
       if(!el.classList.contains("via"))el.style.display="none";return;}
     if(pos>2){el.style.display="none";return;}
@@ -607,22 +652,25 @@ function indietro(){
 
 /* ---------------------------------------------------- trascinamento -- */
 let drag=null;
+function dettaglioAperto(){const el=carte[indice];return !!(el&&el.querySelector(".dettaglio.su"));}
+function guidaAperta(){return !!document.querySelector(".guida:not(.via)");}
 function timbri(el,dx,dy,su){
   el.querySelector(".t-si").style.opacity=su?0:Math.max(0,Math.min(1,dx/90));
   el.querySelector(".t-no").style.opacity=su?0:Math.max(0,Math.min(1,-dx/90));
   el.querySelector(".t-fa").style.opacity=su?Math.max(0,Math.min(1,-dy/90)):0;
 }
 pila.addEventListener("pointerdown",e=>{
-  if(indice>=P.length)return;
+  if(indice>=P.length||drag)return;          /* un dito alla volta: il secondo non ruba il trascinamento */
+  if(!e.isPrimary||(e.pointerType==="mouse"&&e.button!==0))return;
   const el=carte[indice];
   if(!el||!el.contains(e.target))return;
   if(e.target.closest(".dettaglio,.tondo-i,.guida"))return;
-  drag={x:e.clientX,y:e.clientY,el,mosso:false};
-  el.setPointerCapture(e.pointerId);
+  drag={x:e.clientX,y:e.clientY,el,mosso:false,id:e.pointerId};
+  try{el.setPointerCapture(e.pointerId);}catch(err){}
   el.classList.remove("via");el.style.cursor="grabbing";
 });
 pila.addEventListener("pointermove",e=>{
-  if(!drag)return;
+  if(!drag||e.pointerId!==drag.id)return;
   const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
   if(Math.abs(dx)>4||Math.abs(dy)>4)drag.mosso=true;
   const su=dy<-28&&Math.abs(dy)>Math.abs(dx);
@@ -630,7 +678,7 @@ pila.addEventListener("pointermove",e=>{
   timbri(drag.el,dx,dy,su);
 });
 function chiudiDrag(e){
-  if(!drag)return;
+  if(!drag||e.pointerId!==drag.id)return;
   const dx=e.clientX-drag.x,dy=e.clientY-drag.y,el=drag.el,mosso=drag.mosso;
   drag=null;el.style.cursor="grab";timbri(el,0,0,false);
   if(mosso){appenaTrascinato=true;setTimeout(()=>{appenaTrascinato=false;},160);}
@@ -640,7 +688,7 @@ function chiudiDrag(e){
   el.classList.add("via");impila();
 }
 pila.addEventListener("pointerup",chiudiDrag);
-pila.addEventListener("pointercancel",()=>{if(drag){const el=drag.el;drag=null;
+pila.addEventListener("pointercancel",e=>{if(drag&&e.pointerId===drag.id){const el=drag.el;drag=null;
   timbri(el,0,0,false);el.classList.add("via");impila();}});
 
 document.getElementById("cmd-si").onclick=()=>vota("si",1);
@@ -650,12 +698,18 @@ document.getElementById("cmd-indietro").onclick=indietro;
 document.getElementById("rivedi").onclick=()=>{
   indice=0;storia=[];for(const id in stato.voti)manda({tipo:"swipe",id,voto:""});stato.voti={};salva();
   carte.forEach(el=>{el.classList.remove("via");el.style.opacity="1";
-    el.querySelector(".dettaglio").classList.remove("su");});
+    chiudiDettaglio(el,false);});
   impila();classifica();apri("mazzo");
 };
 addEventListener("keydown",e=>{
   if(/input|textarea|select/i.test(e.target.tagName))return;
   if(!document.getElementById("v-mazzo").classList.contains("on"))return;
+  /* Esc chiude il fatto; mentre il fatto o la guida sono aperti le frecce servono a leggere,
+     non a firmare (prima ArrowUp per scorrere il testo registrava «ci metto la faccia").
+     Alt+freccia e il «indietro» del browser, e il tasto tenuto premuto non firma a raffica. */
+  if(e.key==="Escape"&&dettaglioAperto()){chiudiDettaglio(carte[indice],true);return;}
+  if(e.altKey||e.ctrlKey||e.metaKey||e.repeat)return;
+  if(dettaglioAperto()||guidaAperta())return;
   if(e.key==="ArrowRight"){e.preventDefault();vota("si",1);}
   else if(e.key==="ArrowLeft"){e.preventDefault();vota("no",-1);}
   else if(e.key==="ArrowUp"){e.preventDefault();vota("faccia",0);}
@@ -666,13 +720,14 @@ addEventListener("keydown",e=>{
 function classifica(){
   const cont=document.getElementById("lista-classifica");
   const righe=P.map(p=>{const mio=stato.voti[p.id],c=vivo&&vivo.conteggi&&vivo.conteggi[p.id];
-    let tot=c?c.si+c.faccia:0;
+    let tot=c?(+c.si||0)+(+c.faccia||0):0;
     if(!c&&(mio==="si"||mio==="faccia"))tot=1;
     return{p,mio,tot};})
     .sort((a,b)=>b.tot-a.tot);
   const max=Math.max(1,righe[0].tot);
   const nc=document.getElementById("nota-classifica");
-  if(nc)nc.textContent=vivo?("In sala: "+vivo.telefoni+(vivo.telefoni===1?" telefono, ":" telefoni, ")+vivo.firme+(vivo.firme===1?" firma":" firme")+", aggiornato "+new Date().toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit",second:"2-digit"})):(online()?"Collegamento al conteggio in corso…":"Conteggio di questo telefono soltanto.");
+  const vt=vivo?(+vivo.telefoni||0):0,vf=vivo?(+vivo.firme||0):0;
+  if(nc)nc.textContent=vivo?("In sala: "+vt+(vt===1?" telefono, ":" telefoni, ")+vf+(vf===1?" firma":" firme")+", aggiornato "+new Date().toLocaleTimeString("it-IT",{hour:"2-digit",minute:"2-digit",second:"2-digit"})):(online()?"Collegamento al conteggio in corso…":"Conteggio di questo telefono soltanto.");
   cont.innerHTML=righe.map((r,i)=>
     '<div class="riga'+(i<3?" top3":"")+'">'+
       '<span class="pos mono tnum">'+String(i+1).padStart(2,"0")+'</span>'+
@@ -741,6 +796,7 @@ if(!stato.guida&&indice===0){
 }
 
 impila();classifica();muro();vivoCiclo();
+if(coda.length)spedisci();   /* gesti rimasti in coda dall'ultima apertura */
 document.addEventListener("visibilitychange",()=>{if(!document.hidden)vivoCiclo();});
 if(stato.firmatario){
   fe.textContent="Adesione già registrata: "+stato.firmatario.nome+" "+stato.firmatario.cognome+", "+stato.firmatario.citta+".";
