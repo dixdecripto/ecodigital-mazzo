@@ -139,8 +139,9 @@ let prec={},ultimiVisti=new Set(),prima=true;
 function numero(id,v){const el=document.getElementById(id);if(el.textContent!==String(v)){el.textContent=v;el.classList.add("salta");setTimeout(()=>el.classList.remove("salta"),260);}}
 
 function disegna(d){
-  numero("n-tel",d.telefoni);numero("n-firme",d.firme);numero("n-faccia",d.faccia);
-  const righe=P.map((p,i)=>{const c=d.conteggi[p.id]||{si:0,faccia:0,no:0};return{p,i,tot:c.si+c.faccia,no:c.no};})
+  const n=v=>+v||0;
+  numero("n-tel",n(d.telefoni));numero("n-firme",n(d.firme));numero("n-faccia",n(d.faccia));
+  const righe=P.map((p,i)=>{const c=d.conteggi[p.id]||{};return{p,i,tot:n(c.si)+n(c.faccia),no:n(c.no)};})
     .sort((a,b)=>b.tot-a.tot||a.i-b.i);
   const max=Math.max(1,righe[0].tot);
   const cont=document.getElementById("classifica");
@@ -152,8 +153,10 @@ function disegna(d){
     el.querySelector(".tit b").textContent=r.p.titolo;
     el.querySelector(".bar i").style.width=Math.round(r.tot/max*100)+"%";
     el.querySelector(".cif").textContent=r.tot;
-    cont.appendChild(el);
   });
+  /* si riordina il DOM solo se l'ordine cambia: rimontare le righe a ogni ciclo annullava la transizione delle barre */
+  const ordine=righe.map(r=>r.p.id).join(),attuale=[...cont.children].map(e=>e.dataset.id).join();
+  if(ordine!==attuale)righe.forEach(r=>cont.appendChild(cont.querySelector('[data-id="'+r.p.id+'"]')));
   const feed=document.getElementById("feed");
   (d.ultimi||[]).slice().reverse().forEach(u=>{
     const k=u.id+"|"+u.voto+"|"+u.ora;if(ultimiVisti.has(k))return;ultimiVisti.add(k);
@@ -173,13 +176,15 @@ function chiama(url,opz,ms){
     .then(r=>{if(!r.ok)throw new Error("http "+r.status);return r.json();})
     .finally(()=>clearTimeout(tm));
 }
-let leggendo=false;
+let leggendo=false,giro=0;   /* giro: una lettura partita prima di «Azzera» non ridisegna i vecchi dati */
 async function leggi(){
   const st=document.getElementById("stato");
   if(!BACKEND.ENDPOINT){st.textContent="Backend non collegato: inserisci l'URL /exec in BACKEND.ENDPOINT";st.className="stato err";return;}
   if(leggendo)return;leggendo=true;
   try{
+    const g=giro;
     const d=await chiama(BACKEND.ENDPOINT+"?ev="+encodeURIComponent(BACKEND.EVENTO)+"&_="+Date.now(),{},10000);
+    if(g!==giro)return;
     if(!d||!d.ok)throw new Error(d&&d.errore||"server");
     if(!d.conteggi||typeof d.conteggi!=="object")d.conteggi={};
     disegna(d);st.textContent="aggiornato "+new Date().toLocaleTimeString("it-IT");st.className="stato";
@@ -196,7 +201,8 @@ document.getElementById("azzera").onclick=async()=>{
     alert(j&&j.ok?"Evento azzerato.":"Errore: "+(j&&j.errore));
     if(!j||!j.ok)return;
   }catch(e){alert("Errore: "+(e.name==="AbortError"?"tempo scaduto":e.message));return;}
-  ultimiVisti=new Set();document.getElementById("feed").innerHTML='<span class="mono">Ultimi gesti</span>';leggi();
+  giro++;ultimiVisti=new Set();document.getElementById("feed").innerHTML='<span class="mono">Ultimi gesti</span>';
+  leggendo=false;leggi();
 };
 </script>
 </html>

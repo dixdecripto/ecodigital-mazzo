@@ -36,6 +36,8 @@ h1,h2,h3{margin:0;font-family:var(--display);font-weight:800;font-stretch:125%;l
 p{margin:0}
 button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 :focus-visible{outline:3px solid var(--signal);outline-offset:2px;border-radius:8px}
+/* sul blu dell'intestazione e sulle carte scure il verde non si vedeva (1,5:1): lì il fuoco usa il giallo del brand */
+.app-top :focus-visible,.carta :focus-visible,.fine :focus-visible{outline-color:var(--sun)}
 .mono{font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;
   font-weight:600}
 .tnum{font-variant-numeric:tabular-nums}
@@ -79,7 +81,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
     box-shadow:0 30px 70px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.12)}
 }
 .app-top{display:flex;align-items:center;justify-content:space-between;gap:10px;
-  padding:11px 14px 9px;background:var(--forest);border-bottom:1px solid var(--forest);z-index:5}
+  padding:calc(11px + env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) 9px max(14px,env(safe-area-inset-left));background:var(--forest);border-bottom:1px solid var(--forest);z-index:5}
 .marchio{display:flex;align-items:center;gap:9px}
 .marchio{min-width:0}
 .marchio img{display:block;height:18px;width:auto}
@@ -495,9 +497,10 @@ try{const c=JSON.parse(localStorage.getItem(MEM_CODA)||"[]");if(Array.isArray(c)
 function salvaCoda(){try{coda.length?localStorage.setItem(MEM_CODA,JSON.stringify(coda)):localStorage.removeItem(MEM_CODA);}catch(e){}}
 let ultimoT=0;
 function adesso(){let n=Date.now();if(n<=ultimoT)n=ultimoT+1;ultimoT=n;return new Date(n).toISOString();}
-function manda(o){if(!online())return;coda.push(Object.assign({ev:BACKEND.EVENTO,dev:stato.dev,t:adesso()},o));salvaCoda();spedisci();}
+function manda(o){if(!online())return;coda.push(Object.assign({ev:BACKEND.EVENTO,dev:stato.dev,t:adesso()},o));salvaCoda();
+  if(!ritentaTimer)spedisci();}   /* se un nuovo tentativo e gia in programma, il gesto aspetta quello: l'attesa crescente resta valida */
 async function spedisci(){
-  if(inviando||!coda.length)return;inviando=true;clearTimeout(ritentaTimer);
+  if(inviando||!coda.length)return;inviando=true;clearTimeout(ritentaTimer);ritentaTimer=null;
   const lotto=coda.slice(0,20);   /* tutti i gesti in attesa partono in una chiamata sola */
   try{const j=await chiama(BACKEND.ENDPOINT,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},
       body:JSON.stringify({tipo:"lotto",ev:BACKEND.EVENTO,dev:stato.dev,voci:lotto})},15000);
@@ -631,6 +634,9 @@ function finale(){
 function vota(v,dir){
   if(indice>=P.length)return;
   const el=carte[indice];
+  /* un voto da bottone o tastiera chiude il trascinamento in corso: al rilascio non deve firmare la carta dopo */
+  if(drag&&drag.el===el){drag=null;el.style.cursor="grab";timbri(el,0,0,false);}
+  chiudiDettaglio(el,false);
   stato.voti[P[indice].id]=v;salva();
   manda({tipo:"swipe",id:P[indice].id,voto:v});
   storia.push(indice);
@@ -660,7 +666,9 @@ function timbri(el,dx,dy,su){
   el.querySelector(".t-fa").style.opacity=su?Math.max(0,Math.min(1,-dy/90)):0;
 }
 pila.addEventListener("pointerdown",e=>{
-  if(indice>=P.length||drag)return;          /* un dito alla volta: il secondo non ruba il trascinamento */
+  if(indice>=P.length)return;
+  /* un dito alla volta: il secondo (non primario) non ruba il trascinamento; un nuovo primario
+     vuol dire che il gesto precedente e finito anche se pointerup non e arrivato */
   if(!e.isPrimary||(e.pointerType==="mouse"&&e.button!==0))return;
   const el=carte[indice];
   if(!el||!el.contains(e.target))return;
@@ -704,6 +712,7 @@ document.getElementById("rivedi").onclick=()=>{
 addEventListener("keydown",e=>{
   if(/input|textarea|select/i.test(e.target.tagName))return;
   if(!document.getElementById("v-mazzo").classList.contains("on"))return;
+  if(e.target.closest&&e.target.closest("[role=tablist]"))return;   /* frecce sulle linguette: si naviga, non si firma */
   /* Esc chiude il fatto; mentre il fatto o la guida sono aperti le frecce servono a leggere,
      non a firmare (prima ArrowUp per scorrere il testo registrava «ci metto la faccia").
      Alt+freccia e il «indietro» del browser, e il tasto tenuto premuto non firma a raffica. */
